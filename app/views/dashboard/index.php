@@ -63,7 +63,7 @@
     </div>
 </div>
 
-<!-- Filtre par ville -->
+
 <div class="card mb-4">
     <div class="card-body py-3">
         <div class="row align-items-end">
@@ -72,8 +72,8 @@
                 <select id="filtre_ville_dashboard" class="form-select">
                     <option value="">— Toutes les villes —</option>
                     <?php foreach($dashboard_data as $data): ?>
-                    <option value="<?php echo htmlspecialchars($data['ville']['nom']); ?>">
-                        <?php echo htmlspecialchars($data['ville']['nom']) . ' (' . htmlspecialchars($data['ville']['region_nom']) . ')'; ?>
+                    <option value="<?php echo $data['ville']['nom']; ?>">
+                        <?php echo $data['ville']['nom'] . ' (' . $data['ville']['region_nom'] . ')'; ?>
                     </option>
                     <?php endforeach; ?>
                 </select>
@@ -83,7 +83,7 @@
 </div>
 
 <?php foreach($dashboard_data as $data): ?>
-<div class="card ville-card" data-ville="<?php echo htmlspecialchars($data['ville']['nom']); ?>">
+<div class="card ville-card" data-ville="<?php echo $data['ville']['nom']; ?>">
     <div class="card-header bg-primary text-white">
         <h4 class="mb-0"><?php echo $data['ville']['nom']; ?> - <?php echo $data['ville']['region_nom']; ?></h4>
     </div>
@@ -162,17 +162,6 @@
 </div>
 <?php endforeach; ?>
 
-<script>
-document.getElementById('filtre_ville_dashboard').addEventListener('change', function() {
-    const villeChoisie = this.value;
-    document.querySelectorAll('.ville-card').forEach(function(card) {
-        if (villeChoisie === '' || card.dataset.ville === villeChoisie) {
-            card.style.display = '';
-        } else {
-            card.style.display = 'none';
-        }
-    });
-});
-</script>
+<script src="/js/dashboard.js"></script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

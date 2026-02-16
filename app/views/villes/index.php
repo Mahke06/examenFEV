@@ -6,9 +6,9 @@
     <table class="table table-striped table-bordered align-middle">
         <thead class="table-dark">
             <tr>
-                <th class="text-nowrap">Ville</th>
-                <th class="text-nowrap">Région</th>
-                <th class="text-nowrap">Nombre de sinistrés</th>
+                <th>Ville</th>
+                <th>Région</th>
+                <th>Nombre de sinistrés</th>
             </tr>
         </thead>
         <tbody>
@@ -16,7 +16,6 @@
             <tr>
                 <td><?php echo $ville['nom']; ?></td>
                 <td><?php echo $ville['region_nom']; ?></td>
-                <td><?php echo number_format($ville['nombre_sinistres'], 0, ',', ' '); ?></td>
             </tr>
             <?php endforeach; ?>
         </tbody>

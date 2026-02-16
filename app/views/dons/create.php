@@ -15,7 +15,7 @@
                     <option value="">— Toutes les villes —</option>
                     <?php foreach($villes as $ville): ?>
                     <option value="<?php echo $ville['id']; ?>">
-                        <?php echo htmlspecialchars($ville['nom']) . ' (' . htmlspecialchars($ville['region_nom']) . ')'; ?>
+                        <?php echo $ville['nom'] . ' (' . $ville['region_nom'] . ')'; ?>
                     </option>
                     <?php endforeach; ?>
                 </select>
@@ -60,33 +60,6 @@
     </div>
 </div>
 
-<script>
-const categorieSelect = document.getElementById('categorie_id');
-const typeBesoinSelect = document.getElementById('type_besoin_id');
-const uniteText = document.getElementById('unite_text');
-
-categorieSelect.addEventListener('change', function() {
-    const selectedCategorie = this.value;
-    const options = typeBesoinSelect.querySelectorAll('option');
-    
-    options.forEach(option => {
-        if(option.value === '') {
-            option.style.display = 'block';
-        } else {
-            const categorie = option.getAttribute('data-categorie');
-            option.style.display = categorie === selectedCategorie ? 'block' : 'none';
-        }
-    });
-    
-    typeBesoinSelect.value = '';
-    uniteText.textContent = '';
-});
-
-typeBesoinSelect.addEventListener('change', function() {
-    const selectedOption = this.options[this.selectedIndex];
-    const unite = selectedOption.getAttribute('data-unite');
-    uniteText.textContent = 'Unité: ' + unite;
-});
-</script>
+<script src="/js/dons-create.js"></script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

@@ -8,8 +8,8 @@
 </div>
 
 <!-- KPI Cards -->
-<div class="row g-3 mb-4">
-    <div class="col-sm-6 col-lg-4">
+<div class="row mb-4">
+    <div class="col-md-4">
         <div class="card border-0 shadow-sm">
             <div class="card-body text-center" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: var(--radius-lg); color: white;">
                 <h6 class="text-uppercase mb-2" style="opacity:0.85;">Besoins Totaux</h6>
@@ -44,7 +44,7 @@
     </div>
 </div>
 
-<!-- Barre de progression -->
+
 <div class="card mb-4">
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -67,8 +67,8 @@
 </div>
 
 <!-- KPI secondaires -->
-<div class="row g-3 mb-4">
-    <div class="col-sm-6 col-lg-4">
+<div class="row mb-4">
+    <div class="col-md-4">
         <div class="card">
             <div class="card-body text-center">
                 <h6 class="text-muted text-uppercase mb-1">Dons Totaux Reçus</h6>
@@ -100,7 +100,7 @@
     </div>
 </div>
 
-<!-- Détail par ville -->
+
 <div class="card mb-4">
     <div class="card-header">
         <h5 class="mb-0">🏙️ Détail par ville</h5>
@@ -121,7 +121,7 @@
                     <?php foreach ($data['detail_villes'] as $ville): ?>
                     <?php $pct = $ville['besoins_totaux'] > 0 ? round(($ville['besoins_satisfaits'] / $ville['besoins_totaux']) * 100, 1) : 0; ?>
                     <tr>
-                        <td class="fw-bold"><?php echo htmlspecialchars($ville['ville_nom']); ?></td>
+                        <td class="fw-bold"><?php echo $ville['ville_nom']; ?></td>
                         <td class="text-end"><?php echo number_format($ville['besoins_totaux'], 0, ',', ' '); ?></td>
                         <td class="text-end text-success"><?php echo number_format($ville['besoins_satisfaits'], 0, ',', ' '); ?></td>
                         <td class="text-end text-danger"><?php echo number_format($ville['besoins_restants'], 0, ',', ' '); ?></td>
@@ -139,7 +139,7 @@
     </div>
 </div>
 
-<!-- Détail par catégorie -->
+
 <div class="card mb-4">
     <div class="card-header">
         <h5 class="mb-0">📁 Détail par catégorie</h5>
@@ -165,7 +165,7 @@
                                 echo $cat['categorie_nom'] === 'en Nature' ? 'success' : 
                                     ($cat['categorie_nom'] === 'en Materiaux' ? 'warning' : 'info'); 
                             ?>">
-                                <?php echo htmlspecialchars($cat['categorie_nom']); ?>
+                                <?php echo $cat['categorie_nom']; ?>
                             </span>
                         </td>
                         <td class="text-end"><?php echo number_format($cat['besoins_totaux'], 0, ',', ' '); ?></td>
@@ -185,96 +185,6 @@
     </div>
 </div>
 
-<script>
-function formatMontant(val) {
-    return Math.round(val).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' Ar';
-}
-
-function formatMontantSansAr(val) {
-    return Math.round(val).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-}
-
-function getBadgeClass(pct) {
-    if (pct >= 75) return 'success';
-    if (pct >= 40) return 'warning';
-    return 'danger';
-}
-
-function getCategoryBadge(nom) {
-    if (nom === 'en Nature') return 'success';
-    if (nom === 'en Materiaux') return 'warning';
-    return 'info';
-}
-
-function actualiserDonnees() {
-    const btn = document.getElementById('btn-actualiser');
-    btn.disabled = true;
-    btn.innerHTML = '⏳ Chargement...';
-
-    fetch('/recapitulation/api')
-        .then(response => response.json())
-        .then(data => {
-            // KPI principaux
-            document.getElementById('kpi-besoins-totaux').textContent = formatMontant(data.besoins_totaux);
-            document.getElementById('kpi-besoins-satisfaits').textContent = formatMontant(data.besoins_satisfaits);
-            document.getElementById('kpi-besoins-restants').textContent = formatMontant(data.besoins_restants);
-            
-            // Pourcentage
-            const pct = data.pourcentage;
-            const pctEl = document.getElementById('kpi-pourcentage');
-            pctEl.textContent = pct + '%';
-            pctEl.className = 'badge bg-' + getBadgeClass(pct) + ' fs-6';
-
-            // Barre de progression
-            const bar = document.getElementById('progress-bar');
-            bar.style.width = pct + '%';
-            bar.textContent = pct + '%';
-            bar.setAttribute('aria-valuenow', pct);
-            bar.className = 'progress-bar bg-' + getBadgeClass(pct) + ' progress-bar-striped progress-bar-animated';
-
-            // KPI secondaires
-            document.getElementById('kpi-dons-totaux').textContent = formatMontant(data.dons_totaux);
-            document.getElementById('kpi-achats-totaux').textContent = formatMontant(data.achats_totaux);
-            document.getElementById('kpi-solde-argent').textContent = formatMontant(data.solde_argent);
-
-            // Tableau villes
-            let villesHtml = '';
-            data.detail_villes.forEach(v => {
-                const vpct = v.besoins_totaux > 0 ? Math.round((v.besoins_satisfaits / v.besoins_totaux) * 1000) / 10 : 0;
-                villesHtml += '<tr>' +
-                    '<td class="fw-bold">' + v.ville_nom + '</td>' +
-                    '<td class="text-end">' + formatMontantSansAr(v.besoins_totaux) + '</td>' +
-                    '<td class="text-end text-success">' + formatMontantSansAr(v.besoins_satisfaits) + '</td>' +
-                    '<td class="text-end text-danger">' + formatMontantSansAr(v.besoins_restants) + '</td>' +
-                    '<td><div class="progress" style="height:18px;"><div class="progress-bar bg-' + getBadgeClass(vpct) + '" style="width:' + vpct + '%">' + vpct + '%</div></div></td>' +
-                    '</tr>';
-            });
-            document.getElementById('table-villes').innerHTML = villesHtml;
-
-            // Tableau catégories
-            let catHtml = '';
-            data.detail_categories.forEach(c => {
-                const cpct = c.besoins_totaux > 0 ? Math.round((c.besoins_satisfaits / c.besoins_totaux) * 1000) / 10 : 0;
-                catHtml += '<tr>' +
-                    '<td><span class="badge bg-' + getCategoryBadge(c.categorie_nom) + '">' + c.categorie_nom + '</span></td>' +
-                    '<td class="text-end">' + formatMontantSansAr(c.besoins_totaux) + '</td>' +
-                    '<td class="text-end text-success">' + formatMontantSansAr(c.besoins_satisfaits) + '</td>' +
-                    '<td class="text-end text-danger">' + formatMontantSansAr(c.besoins_restants) + '</td>' +
-                    '<td><div class="progress" style="height:18px;"><div class="progress-bar bg-' + getBadgeClass(cpct) + '" style="width:' + cpct + '%">' + cpct + '%</div></div></td>' +
-                    '</tr>';
-            });
-            document.getElementById('table-categories').innerHTML = catHtml;
-
-            btn.disabled = false;
-            btn.innerHTML = '🔄 Actualiser';
-        })
-        .catch(err => {
-            console.error('Erreur:', err);
-            btn.disabled = false;
-            btn.innerHTML = '🔄 Actualiser';
-            alert('Erreur lors de l\'actualisation des données.');
-        });
-}
-</script>
+<script src="/js/recapitulation.js"></script>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

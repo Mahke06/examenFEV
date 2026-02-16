@@ -7,12 +7,12 @@
 
 <?php if (isset($_GET['success'])): ?>
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <strong>✅ Succès !</strong> <?php echo htmlspecialchars(urldecode($_GET['success'])); ?>
+        <strong>✅ Succès !</strong> <?php echo urldecode($_GET['success']); ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 <?php endif; ?>
 
-<!-- Filtre par ville -->
+
 <div class="card mb-4">
     <div class="card-body py-3">
         <form method="GET" action="/achats" class="row align-items-end g-3">
@@ -22,7 +22,7 @@
                     <option value="">— Toutes les villes —</option>
                     <?php foreach ($villes as $ville): ?>
                         <option value="<?php echo $ville['id']; ?>" <?php echo (isset($_GET['ville_id']) && $_GET['ville_id'] == $ville['id']) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($ville['nom']); ?>
+                            <?php echo $ville['nom']; ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
@@ -71,20 +71,20 @@
             <tbody>
                 <?php foreach ($achats as $index => $achat): ?>
                 <tr>
-                    <td class="text-nowrap"><?php echo $index + 1; ?></td>
-                    <td class="text-nowrap"><?php echo htmlspecialchars($achat['ville_nom']); ?></td>
-                    <td class="text-nowrap"><?php echo htmlspecialchars($achat['type_besoin_nom']); ?></td>
+                    <td><?php echo $index + 1; ?></td>
+                    <td><?php echo htmlspecialchars($achat['ville_nom']); ?></td>
+                    <td><?php echo htmlspecialchars($achat['type_besoin_nom']); ?></td>
                     <td>
                         <span class="badge bg-<?php echo $achat['categorie_nom'] === 'en Nature' ? 'success' : 'warning'; ?>">
-                            <?php echo htmlspecialchars($achat['categorie_nom']); ?>
+                            <?php echo $achat['categorie_nom']; ?>
                         </span>
                     </td>
-                    <td class="text-nowrap"><?php echo number_format($achat['quantite'], 0, ',', ' ') . ' ' . htmlspecialchars($achat['unite']); ?></td>
-                    <td class="text-nowrap"><?php echo number_format($achat['prix_unitaire'], 0, ',', ' '); ?> Ar</td>
-                    <td class="text-nowrap"><?php echo number_format($achat['quantite'] * $achat['prix_unitaire'], 0, ',', ' '); ?> Ar</td>
-                    <td class="text-nowrap"><span class="badge bg-info"><?php echo $achat['frais_pourcent']; ?>%</span></td>
-                    <td class="text-nowrap"><strong><?php echo number_format($achat['montant_total'], 0, ',', ' '); ?> Ar</strong></td>
-                    <td class="text-nowrap"><?php echo date('d/m/Y H:i', strtotime($achat['date_achat'])); ?></td>
+                    <td><?php echo number_format($achat['quantite'], 0, ',', ' ') . ' ' . htmlspecialchars($achat['unite']); ?></td>
+                    <td><?php echo number_format($achat['prix_unitaire'], 0, ',', ' '); ?> Ar</td>
+                    <td><?php echo number_format($achat['quantite'] * $achat['prix_unitaire'], 0, ',', ' '); ?> Ar</td>
+                    <td><span class="badge bg-info"><?php echo $achat['frais_pourcent']; ?>%</span></td>
+                    <td><strong><?php echo number_format($achat['montant_total'], 0, ',', ' '); ?> Ar</strong></td>
+                    <td><?php echo date('d/m/Y H:i', strtotime($achat['date_achat'])); ?></td>
                     <td>
                         <form method="POST" action="/achats/delete" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet achat ? Le montant sera restauré au don en argent.');">
                             <input type="hidden" name="id" value="<?php echo $achat['id']; ?>">
