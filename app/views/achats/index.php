@@ -1,25 +1,56 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
+<style>
+    /* Force la structure du tableau pour éviter les décalages */
+    .table-simple {
+        table-layout: fixed;
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+    }
+    
+    .table-simple th, .table-simple td {
+        padding: 8px;
+        font-size: 0.8rem;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Ajoute "..." si le texte dépasse */
+        white-space: nowrap;     /* Empêche le retour à la ligne */
+        border: 1px solid #dee2e6;
+    }
+
+    /* Définition des largeurs de colonnes pour l'alignement */
+    .col-xs { width: 30px; }
+    .col-md { width: 12%; }
+    .col-lg { width: 15%; }
+    .col-price { width: 11%; }
+    .col-action { width: 90px; }
+
+    .badge-simple {
+        padding: 2px 5px;
+        font-size: 0.75rem;
+        border-radius: 3px;
+        font-weight: bold;
+    }
+</style>
+
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
     <h1>📦 Liste des achats</h1>
     <a href="/achats/create" class="btn btn-primary">Nouvel achat</a>
 </div>
 
 <?php if (isset($_GET['success'])): ?>
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="alert alert-success py-2">
         <strong>✅ Succès !</strong> <?php echo urldecode($_GET['success']); ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 <?php endif; ?>
 
-
-<div class="card mb-4">
-    <div class="card-body py-3">
-        <form method="GET" action="/achats" class="row align-items-end g-3">
-            <div class="col-md-4">
-                <label for="ville_id" class="form-label">Filtrer par ville</label>
-                <select name="ville_id" id="ville_id" class="form-select">
-                    <option value="">— Toutes les villes —</option>
+<div class="card mb-3 border-0 bg-light">
+    <div class="card-body py-2">
+        <form method="GET" action="/achats" class="row g-2 align-items-center">
+            <div class="col-auto small fw-bold">Ville:</div>
+            <div class="col-md-3">
+                <select name="ville_id" class="form-select form-select-sm">
+                    <option value="">— Toutes —</option>
                     <?php foreach ($villes as $ville): ?>
                         <option value="<?php echo $ville['id']; ?>" <?php echo (isset($_GET['ville_id']) && $_GET['ville_id'] == $ville['id']) ? 'selected' : ''; ?>>
                             <?php echo $ville['nom']; ?>
@@ -27,77 +58,73 @@
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-md-3">
-                <button type="submit" class="btn btn-primary">Filtrer</button>
-                <?php if (isset($_GET['ville_id']) && $_GET['ville_id'] !== ''): ?>
-                    <a href="/achats" class="btn btn-secondary ms-2">Réinitialiser</a>
-                <?php endif; ?>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-sm btn-primary">Filtrer</button>
             </div>
-            <div class="col-md-5 text-end">
-                <span class="badge bg-info fs-6">
-                    Frais d'achat : <?php echo $frais_achat; ?>%
-                </span>
+            <div class="col text-end">
+                <span class="badge-simple bg-info text-white">Frais: <?php echo $frais_achat; ?>%</span>
             </div>
         </form>
     </div>
 </div>
 
 <?php if (empty($achats)): ?>
-    <div class="alert alert-info">
-        Aucun achat enregistré<?php echo (isset($_GET['ville_id']) && $_GET['ville_id'] !== '') ? ' pour cette ville' : ''; ?>.
-    </div>
+    <div class="alert alert-info">Aucun achat enregistré.</div>
 <?php else: ?>
     <?php 
     $total_general = 0;
     foreach ($achats as $a) { $total_general += $a['montant_total']; }
     ?>
     <div class="table-responsive">
-        <table class="table table-striped table-bordered align-middle">
-            <thead class="table-dark">
+        <table border="1" class="table-simple">
+            <thead style="background-color: #212529; color: white;">
                 <tr>
-                    <th class="text-nowrap">#</th>
-                    <th class="text-nowrap">Ville</th>
-                    <th class="text-nowrap">Type de besoin</th>
-                    <th class="text-nowrap">Catégorie</th>
-                    <th class="text-nowrap">Quantité</th>
-                    <th class="text-nowrap">Prix unitaire</th>
-                    <th class="text-nowrap">Sous-total HT</th>
-                    <th class="text-nowrap">Frais (%)</th>
-                    <th class="text-nowrap">Montant total</th>
-                    <th class="text-nowrap">Date</th>
-                    <th class="text-nowrap">Actions</th>
+                    <th class="col-xs">#</th>
+                    <th class="col-md">Ville</th>
+                    <th class="col-lg">Type de besoin</th>
+                    <th class="col-md">Catégorie</th>
+                    <th class="col-md">Quantité</th>
+                    <th class="col-price text-end">HT</th>
+                    <th class="col-price text-end">Total TTC</th>
+                    <th class="col-lg">Date</th>
+                    <th class="col-action">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($achats as $index => $achat): ?>
                 <tr>
-                    <td><?php echo $index + 1; ?></td>
+                    <td align="center"><?php echo $index + 1; ?></td>
                     <td><?php echo htmlspecialchars($achat['ville_nom']); ?></td>
-                    <td><?php echo htmlspecialchars($achat['type_besoin_nom']); ?></td>
-                    <td>
-                        <span class="badge bg-<?php echo $achat['categorie_nom'] === 'en Nature' ? 'success' : 'warning'; ?>">
+                    <td title="<?php echo htmlspecialchars($achat['type_besoin_nom']); ?>">
+                        <b><?php echo htmlspecialchars($achat['type_besoin_nom']); ?></b>
+                    </td>
+                    <td align="center">
+                        <?php 
+                        $color = $achat['categorie_nom'] === 'en Nature' ? '#198754' : '#ffc107';
+                        $text = $achat['categorie_nom'] === 'en Nature' ? 'white' : 'black';
+                        ?>
+                        <span class="badge-simple" style="background-color:<?php echo $color; ?>; color:<?php echo $text; ?>;">
                             <?php echo $achat['categorie_nom']; ?>
                         </span>
                     </td>
-                    <td><?php echo number_format($achat['quantite'], 0, ',', ' ') . ' ' . htmlspecialchars($achat['unite']); ?></td>
-                    <td><?php echo number_format($achat['prix_unitaire'], 0, ',', ' '); ?> Ar</td>
-                    <td><?php echo number_format($achat['quantite'] * $achat['prix_unitaire'], 0, ',', ' '); ?> Ar</td>
-                    <td><span class="badge bg-info"><?php echo $achat['frais_pourcent']; ?>%</span></td>
-                    <td><strong><?php echo number_format($achat['montant_total'], 0, ',', ' '); ?> Ar</strong></td>
-                    <td><?php echo date('d/m/Y H:i', strtotime($achat['date_achat'])); ?></td>
-                    <td>
-                        <form method="POST" action="/achats/delete" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet achat ? Le montant sera restauré au don en argent.');">
+                    <td><?php echo number_format($achat['quantite'], 0, ',', ' ') . ' ' . $achat['unite']; ?></td>
+                    <td align="right"><?php echo number_format($achat['quantite'] * $achat['prix_unitaire'], 0, ',', ' '); ?></td>
+                    <td align="right"><b><?php echo number_format($achat['montant_total'], 0, ',', ' '); ?></b></td>
+                    <td class="small"><?php echo date('d/m/y H:i', strtotime($achat['date_achat'])); ?></td>
+                    <td align="center">
+                        <form method="POST" action="/achats/delete" onsubmit="return confirm('Supprimer cet achat ?');">
                             <input type="hidden" name="id" value="<?php echo $achat['id']; ?>">
-                            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                            <button type="submit" style="color:red; border:none; background:none; cursor:pointer; font-size:0.75rem; text-decoration:underline;">Supprimer</button>
                         </form>
                     </td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
-            <tfoot>
-                <tr class="table-dark">
-                    <td colspan="8" class="text-end fw-bold text-nowrap">Total général :</td>
-                    <td colspan="3" class="fw-bold text-nowrap"><?php echo number_format($total_general, 0, ',', ' '); ?> Ar</td>
+            <tfoot style="background-color: #f8f9fa; font-weight: bold;">
+                <tr>
+                    <td colspan="6" align="right">TOTAL GÉNÉRAL :</td>
+                    <td align="right" style="background-color: #e9ecef;"><?php echo number_format($total_general, 0, ',', ' '); ?> Ar</td>
+                    <td colspan="2"></td>
                 </tr>
             </tfoot>
         </table>

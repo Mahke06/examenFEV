@@ -1,5 +1,37 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
+<style>
+    /* Force la structure rigide pour les tableaux récapitulatifs */
+    .table-recap {
+        table-layout: fixed;
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+    }
+    
+    .table-recap th, .table-recap td {
+        padding: 8px;
+        font-size: 0.85rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        border: 1px solid #dee2e6;
+    }
+
+    /* Largeurs de colonnes spécifiques */
+    .col-name { width: 30%; }
+    .col-amount { width: 20%; }
+    .col-progress { width: 30%; }
+
+    .stat-box {
+        padding: 15px;
+        border-radius: 8px;
+        color: white;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+</style>
+
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
     <h1>📊 Récapitulation financière</h1>
     <button id="btn-actualiser" class="btn btn-primary" onclick="actualiserDonnees()">
@@ -7,114 +39,47 @@
     </button>
 </div>
 
-<!-- KPI Cards -->
-<div class="row mb-4">
+<div class="row mb-2">
     <div class="col-md-4">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body text-center" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: var(--radius-lg); color: white;">
-                <h6 class="text-uppercase mb-2" style="opacity:0.85;">Besoins Totaux</h6>
-                <div id="kpi-besoins-totaux" class="fs-3 fw-bold">
-                    <?php echo number_format($data['besoins_totaux'], 0, ',', ' '); ?> Ar
-                </div>
-                <small style="opacity:0.7;">Σ (quantité demandée × prix unitaire)</small>
+        <div class="stat-box" style="background: linear-gradient(135deg, #0d6efd, #0a58ca);">
+            <small class="text-uppercase" style="opacity:0.8;">Besoins Totaux</small>
+            <div id="kpi-besoins-totaux" class="fs-3 fw-bold">
+                <?php echo number_format($data['besoins_totaux'], 0, ',', ' '); ?> Ar
             </div>
         </div>
     </div>
-    <div class="col-sm-6 col-lg-4">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body text-center" style="background: linear-gradient(135deg, var(--success), var(--success-light)); border-radius: var(--radius-lg); color: white;">
-                <h6 class="text-uppercase mb-2" style="opacity:0.85;">Besoins Satisfaits</h6>
-                <div id="kpi-besoins-satisfaits" class="fs-3 fw-bold">
-                    <?php echo number_format($data['besoins_satisfaits'], 0, ',', ' '); ?> Ar
-                </div>
-                <small style="opacity:0.7;">Σ (quantité satisfaite × prix unitaire)</small>
+    <div class="col-md-4">
+        <div class="stat-box" style="background: linear-gradient(135deg, #198754, #157347);">
+            <small class="text-uppercase" style="opacity:0.8;">Besoins Satisfaits</small>
+            <div id="kpi-besoins-satisfaits" class="fs-3 fw-bold">
+                <?php echo number_format($data['besoins_satisfaits'], 0, ',', ' '); ?> Ar
             </div>
         </div>
     </div>
-    <div class="col-sm-6 col-lg-4">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body text-center" style="background: linear-gradient(135deg, var(--danger), var(--danger-light)); border-radius: var(--radius-lg); color: white;">
-                <h6 class="text-uppercase mb-2" style="opacity:0.85;">Besoins Restants</h6>
-                <div id="kpi-besoins-restants" class="fs-3 fw-bold">
-                    <?php echo number_format($data['besoins_restants'], 0, ',', ' '); ?> Ar
-                </div>
-                <small style="opacity:0.7;">Totaux − Satisfaits</small>
+    <div class="col-md-4">
+        <div class="stat-box" style="background: linear-gradient(135deg, #dc3545, #bb2d3b);">
+            <small class="text-uppercase" style="opacity:0.8;">Besoins Restants</small>
+            <div id="kpi-besoins-restants" class="fs-3 fw-bold">
+                <?php echo number_format($data['besoins_restants'], 0, ',', ' '); ?> Ar
             </div>
         </div>
     </div>
 </div>
-
 
 <div class="card mb-4">
-    <div class="card-body">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="fw-bold">Taux de satisfaction global</span>
-            <span id="kpi-pourcentage" class="badge bg-<?php echo $data['pourcentage'] >= 75 ? 'success' : ($data['pourcentage'] >= 40 ? 'warning' : 'danger'); ?> fs-6">
-                <?php echo $data['pourcentage']; ?>%
-            </span>
-        </div>
-        <div class="progress" style="height: 24px;">
-            <div id="progress-bar" class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
-                 role="progressbar" 
-                 style="width: <?php echo $data['pourcentage']; ?>%"
-                 aria-valuenow="<?php echo $data['pourcentage']; ?>" 
-                 aria-valuemin="0" 
-                 aria-valuemax="100">
-                <?php echo $data['pourcentage']; ?>%
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- KPI secondaires -->
-<div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-body text-center">
-                <h6 class="text-muted text-uppercase mb-1">Dons Totaux Reçus</h6>
-                <div id="kpi-dons-totaux" class="fs-4 fw-bold text-primary">
-                    <?php echo number_format($data['dons_totaux'], 0, ',', ' '); ?> Ar
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-lg-4">
-        <div class="card">
-            <div class="card-body text-center">
-                <h6 class="text-muted text-uppercase mb-1">Total Achats Effectués</h6>
-                <div id="kpi-achats-totaux" class="fs-4 fw-bold" style="color: var(--accent);">
-                    <?php echo number_format($data['achats_totaux'], 0, ',', ' '); ?> Ar
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-lg-4">
-        <div class="card">
-            <div class="card-body text-center">
-                <h6 class="text-muted text-uppercase mb-1">Solde Argent Disponible</h6>
-                <div id="kpi-solde-argent" class="fs-4 fw-bold text-success">
-                    <?php echo number_format($data['solde_argent'], 0, ',', ' '); ?> Ar
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="card mb-4">
-    <div class="card-header">
-        <h5 class="mb-0">🏙️ Détail par ville</h5>
+    <div class="card-header bg-dark text-white py-2">
+        <h5 class="mb-0 small fw-bold">🏙️ Détail par ville</h5>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-striped mb-0">
-                <thead class="table-dark">
+            <table border="1" class="table-recap">
+                <thead style="background-color: #f8f9fa;">
                     <tr>
-                        <th class="text-nowrap">Ville</th>
-                        <th class="text-end text-nowrap">Besoins Totaux (Ar)</th>
-                        <th class="text-end text-nowrap">Satisfaits (Ar)</th>
-                        <th class="text-end text-nowrap">Restants (Ar)</th>
-                        <th class="text-nowrap" style="min-width: 150px;">Progression</th>
+                        <th class="col-name">Ville</th>
+                        <th class="col-amount text-end">Total (Ar)</th>
+                        <th class="col-amount text-end">Satisfaits</th>
+                        <th class="col-amount text-end">Restants</th>
+                        <th class="col-progress">Progression</th>
                     </tr>
                 </thead>
                 <tbody id="table-villes">
@@ -122,14 +87,15 @@
                     <?php $pct = $ville['besoins_totaux'] > 0 ? round(($ville['besoins_satisfaits'] / $ville['besoins_totaux']) * 100, 1) : 0; ?>
                     <tr>
                         <td class="fw-bold"><?php echo $ville['ville_nom']; ?></td>
-                        <td class="text-end"><?php echo number_format($ville['besoins_totaux'], 0, ',', ' '); ?></td>
-                        <td class="text-end text-success"><?php echo number_format($ville['besoins_satisfaits'], 0, ',', ' '); ?></td>
-                        <td class="text-end text-danger"><?php echo number_format($ville['besoins_restants'], 0, ',', ' '); ?></td>
+                        <td align="right"><?php echo number_format($ville['besoins_totaux'], 0, ',', ' '); ?></td>
+                        <td align="right" style="color: green;"><?php echo number_format($ville['besoins_satisfaits'], 0, ',', ' '); ?></td>
+                        <td align="right" style="color: red;"><?php echo number_format($ville['besoins_restants'], 0, ',', ' '); ?></td>
                         <td>
-                            <div class="progress" style="height: 18px;">
+                            <div class="progress" style="height: 12px; margin: 0;">
                                 <div class="progress-bar bg-<?php echo $pct >= 75 ? 'success' : ($pct >= 40 ? 'warning' : 'danger'); ?>" 
-                                     style="width: <?php echo $pct; ?>%"><?php echo $pct; ?>%</div>
+                                     style="width: <?php echo $pct; ?>%"></div>
                             </div>
+                            <small style="font-size: 0.7rem;"><?php echo $pct; ?>%</small>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -139,21 +105,20 @@
     </div>
 </div>
 
-
 <div class="card mb-4">
-    <div class="card-header">
-        <h5 class="mb-0">📁 Détail par catégorie</h5>
+    <div class="card-header bg-dark text-white py-2">
+        <h5 class="mb-0 small fw-bold">📁 Détail par catégorie</h5>
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table table-striped mb-0">
-                <thead class="table-dark">
+            <table border="1" class="table-recap">
+                <thead style="background-color: #f8f9fa;">
                     <tr>
-                        <th class="text-nowrap">Catégorie</th>
-                        <th class="text-end text-nowrap">Besoins Totaux (Ar)</th>
-                        <th class="text-end text-nowrap">Satisfaits (Ar)</th>
-                        <th class="text-end text-nowrap">Restants (Ar)</th>
-                        <th class="text-nowrap" style="min-width: 150px;">Progression</th>
+                        <th class="col-name">Catégorie</th>
+                        <th class="col-amount text-end">Total (Ar)</th>
+                        <th class="col-amount text-end">Satisfaits</th>
+                        <th class="col-amount text-end">Restants</th>
+                        <th class="col-progress">Progression</th>
                     </tr>
                 </thead>
                 <tbody id="table-categories">
@@ -161,21 +126,19 @@
                     <?php $pct = $cat['besoins_totaux'] > 0 ? round(($cat['besoins_satisfaits'] / $cat['besoins_totaux']) * 100, 1) : 0; ?>
                     <tr>
                         <td>
-                            <span class="badge bg-<?php 
-                                echo $cat['categorie_nom'] === 'en Nature' ? 'success' : 
-                                    ($cat['categorie_nom'] === 'en Materiaux' ? 'warning' : 'info'); 
-                            ?>">
+                            <b style="color: <?php echo $cat['categorie_nom'] === 'en Nature' ? '#198754' : ($cat['categorie_nom'] === 'en Materiaux' ? '#fd7e14' : '#0dcaf0'); ?>;">
                                 <?php echo $cat['categorie_nom']; ?>
-                            </span>
+                            </b>
                         </td>
-                        <td class="text-end"><?php echo number_format($cat['besoins_totaux'], 0, ',', ' '); ?></td>
-                        <td class="text-end text-success"><?php echo number_format($cat['besoins_satisfaits'], 0, ',', ' '); ?></td>
-                        <td class="text-end text-danger"><?php echo number_format($cat['besoins_restants'], 0, ',', ' '); ?></td>
+                        <td align="right"><?php echo number_format($cat['besoins_totaux'], 0, ',', ' '); ?></td>
+                        <td align="right" style="color: green;"><?php echo number_format($cat['besoins_satisfaits'], 0, ',', ' '); ?></td>
+                        <td align="right" style="color: red;"><?php echo number_format($cat['besoins_restants'], 0, ',', ' '); ?></td>
                         <td>
-                            <div class="progress" style="height: 18px;">
+                            <div class="progress" style="height: 12px; margin: 0;">
                                 <div class="progress-bar bg-<?php echo $pct >= 75 ? 'success' : ($pct >= 40 ? 'warning' : 'danger'); ?>" 
-                                     style="width: <?php echo $pct; ?>%"><?php echo $pct; ?>%</div>
+                                     style="width: <?php echo $pct; ?>%"></div>
                             </div>
+                            <small style="font-size: 0.7rem;"><?php echo $pct; ?>%</small>
                         </td>
                     </tr>
                     <?php endforeach; ?>

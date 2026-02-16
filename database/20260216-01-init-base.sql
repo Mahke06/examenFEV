@@ -101,9 +101,10 @@ INSERT INTO bngrc_type_besoin (nom, categorie_id, prix_unitaire, unite) VALUES
 ('tente', 2, 25000, 'unité'),
 ('Vêtements', 2, 5000, 'unité'),
 ('Abri temporaire', 2, 20000, 'm²'),
-('Soins médicaux', 3, 15000, 'unité'),
+('Soins médicaux', 3, 1, 'Ar'),
 ('Eau potable', 1, 500, 'litre'),
-('Matériel scolaire', 2, 3000, 'unité');
+('Matériel scolaire', 2, 3000, 'unité'),
+('Espèces', 3, 1, 'Ar');
 
 INSERT INTO bngrc_besoin (ville_id, type_besoin_id, quantite_demandee, date_saisie) VALUES
 (1, 1, 1000, '2026-02-10 08:00:00'),
