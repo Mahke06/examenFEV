@@ -1,0 +1,113 @@
+<?php require_once __DIR__ . '/../layout/header.php'; ?>
+
+<h1 class="mb-4">Ajouter un besoin</h1>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST" action="/besoins/store">
+            <div class="mb-3">
+                <label for="ville_id" class="form-label">Ville</label>
+                <select class="form-select" id="ville_id" name="ville_id" required>
+                    <option value="">Sélectionner une ville</option>
+                    <?php foreach($villes as $ville): ?>
+                    <option value="<?php echo $ville['id']; ?>">
+                        <?php echo htmlspecialchars($ville['nom']) . ' (' . htmlspecialchars($ville['region_nom']) . ')'; ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="categorie_id" class="form-label">Catégorie</label>
+                <select class="form-select" id="categorie_id" name="categorie_id" required>
+                    <option value="">Sélectionner une catégorie</option>
+                    <?php foreach($categories as $categorie): ?>
+                    <option value="<?php echo $categorie['id']; ?>">
+                        <?php echo htmlspecialchars($categorie['nom']); ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="type_besoin_id" class="form-label">Type de besoin</label>
+                <select class="form-select" id="type_besoin_id" name="type_besoin_id" required>
+                    <option value="">Sélectionner un type de besoin</option>
+                    <?php foreach($types_besoins as $type): ?>
+                    <option value="<?php echo $type['id']; ?>" data-categorie="<?php echo $type['categorie_id']; ?>" data-unite="<?php echo htmlspecialchars($type['unite']); ?>" data-prix="<?php echo $type['prix_unitaire']; ?>">
+                        <?php echo htmlspecialchars($type['nom']) . ' (' . number_format($type['prix_unitaire'], 0, ',', ' ') . ' Ar/' . htmlspecialchars($type['unite']) . ')'; ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="quantite_demandee" class="form-label">Quantité demandée</label>
+                <input type="number" class="form-control" id="quantite_demandee" name="quantite_demandee" min="1" required>
+                <small class="form-text text-muted" id="unite_text"></small>
+            </div>
+
+            <div class="mb-3" id="valeur_display" style="display:none;">
+                <label class="form-label">Valeur totale estimée</label>
+                <div class="alert alert-info" id="valeur_totale">0 Ar</div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <a href="/besoins" class="btn btn-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const categorieSelect = document.getElementById('categorie_id');
+const typeBesoinSelect = document.getElementById('type_besoin_id');
+const quantiteInput = document.getElementById('quantite_demandee');
+const uniteText = document.getElementById('unite_text');
+const valeurDisplay = document.getElementById('valeur_display');
+const valeurTotale = document.getElementById('valeur_totale');
+
+categorieSelect.addEventListener('change', function() {
+    const selectedCategorie = this.value;
+    const options = typeBesoinSelect.querySelectorAll('option');
+    
+    options.forEach(option => {
+        if(option.value === '') {
+            option.style.display = 'block';
+        } else {
+            const categorie = option.getAttribute('data-categorie');
+            option.style.display = categorie === selectedCategorie ? 'block' : 'none';
+        }
+    });
+    
+    typeBesoinSelect.value = '';
+    uniteText.textContent = '';
+    valeurDisplay.style.display = 'none';
+});
+
+typeBesoinSelect.addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const unite = selectedOption.getAttribute('data-unite');
+    uniteText.textContent = 'Unité: ' + unite;
+    calculateValeur();
+});
+
+quantiteInput.addEventListener('input', calculateValeur);
+
+function calculateValeur() {
+    const selectedOption = typeBesoinSelect.options[typeBesoinSelect.selectedIndex];
+    const prix = parseFloat(selectedOption.getAttribute('data-prix')) || 0;
+    const quantite = parseFloat(quantiteInput.value) || 0;
+    
+    if(prix > 0 && quantite > 0) {
+        const total = prix * quantite;
+        valeurTotale.textContent = new Intl.NumberFormat('fr-FR').format(total) + ' Ar';
+        valeurDisplay.style.display = 'block';
+    } else {
+        valeurDisplay.style.display = 'none';
+    }
+}
+</script>
+
+<?php require_once __DIR__ . '/../layout/footer.php'; ?>
