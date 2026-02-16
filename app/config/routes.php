@@ -1,6 +1,5 @@
 <?php
 
-use app\controllers\ApiExampleController;
 use app\middlewares\SecurityHeadersMiddleware;
 use flight\Engine;
 use flight\net\Router;
@@ -10,26 +9,57 @@ use flight\net\Router;
  * @var Engine $app
  */
 
+// Chargement des controllers
+require_once __DIR__ . '/../controllers/DashboardController.php';
+require_once __DIR__ . '/../controllers/BesoinController.php';
+require_once __DIR__ . '/../controllers/DonController.php';
+require_once __DIR__ . '/../controllers/VilleController.php';
+
 // This wraps all routes in the group with the SecurityHeadersMiddleware
 $router->group('', function(Router $router) use ($app) {
 
-	$router->get('/', function() use ($app) {
-		$app->render('welcome', [ 'message' => 'Niova ve ? You are gonna do great things!' ]);
+	// --- Dashboard ---
+	$router->get('/', function() {
+		$controller = new DashboardController();
+		$controller->index();
 	});
 
-	$router->get('/route-iray', function() use ($app) {
-		echo 'route iray ve!</h1>';
+	// --- Besoins ---
+	$router->get('/besoins', function() {
+		$controller = new BesoinController();
+		$controller->index();
 	});
 
-
-	$router->get('/hello-world/@name', function($name) {
-		echo '<h1>Hello world! Oh hey '.$name.'!</h1>';
+	$router->get('/besoins/create', function() {
+		$controller = new BesoinController();
+		$controller->create();
 	});
 
-	$router->group('/api', function() use ($router) {
-		$router->get('/users', [ ApiExampleController::class, 'getUsers' ]);
-		$router->get('/users/@id:[0-9]', [ ApiExampleController::class, 'getUser' ]);
-		$router->post('/users/@id:[0-9]', [ ApiExampleController::class, 'updateUser' ]);
+	$router->post('/besoins/store', function() {
+		$controller = new BesoinController();
+		$controller->store();
 	});
-	
+
+	// --- Dons ---
+	$router->get('/dons', function() {
+		$controller = new DonController();
+		$controller->index();
+	});
+
+	$router->get('/dons/create', function() {
+		$controller = new DonController();
+		$controller->create();
+	});
+
+	$router->post('/dons/store', function() {
+		$controller = new DonController();
+		$controller->store();
+	});
+
+	// --- Villes ---
+	$router->get('/villes', function() {
+		$controller = new VilleController();
+		$controller->index();
+	});
+
 }, [ SecurityHeadersMiddleware::class ]);
