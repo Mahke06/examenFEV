@@ -1,0 +1,26 @@
+<?php require_once __DIR__ . '/../layout/header.php'; ?>
+
+<h1 class="mb-4">Liste des villes</h1>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Ville</th>
+                <th>Région</th>
+                <th>Nombre de sinistrés</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($villes as $ville): ?>
+            <tr>
+                <td><?php echo htmlspecialchars($ville['nom']); ?></td>
+                <td><?php echo htmlspecialchars($ville['region_nom']); ?></td>
+                <td><?php echo number_format($ville['nombre_sinistres'], 0, ',', ' '); ?></td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+
+<?php require_once __DIR__ . '/../layout/footer.php'; ?>

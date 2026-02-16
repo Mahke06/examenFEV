@@ -1,35 +1,51 @@
 <?php
 
-use app\controllers\ApiExampleController;
-use app\middlewares\SecurityHeadersMiddleware;
-use flight\Engine;
-use flight\net\Router;
+Flight::route('GET /', function() {
+    require_once __DIR__ . '/../controllers/DashboardController.php';
+    $controller = new DashboardController();
+    $controller->index();
+});
 
-/** 
- * @var Router $router 
- * @var Engine $app
- */
+Flight::route('GET /besoins', function() {
+    require_once __DIR__ . '/../controllers/BesoinController.php';
+    $controller = new BesoinController();
+    $controller->index();
+});
 
-// This wraps all routes in the group with the SecurityHeadersMiddleware
-$router->group('', function(Router $router) use ($app) {
+Flight::route('GET /besoins/create', function() {
+    require_once __DIR__ . '/../controllers/BesoinController.php';
+    $controller = new BesoinController();
+    $controller->create();
+});
 
-	$router->get('/', function() use ($app) {
-		$app->render('welcome', [ 'message' => 'Niova ve ? You are gonna do great things!' ]);
-	});
+Flight::route('POST /besoins/store', function() {
+    require_once __DIR__ . '/../controllers/BesoinController.php';
+    $controller = new BesoinController();
+    $controller->store();
+});
 
-	$router->get('/route-iray', function() use ($app) {
-		echo 'route iray ve!</h1>';
-	});
+Flight::route('GET /dons', function() {
+    require_once __DIR__ . '/../controllers/DonController.php';
+    $controller = new DonController();
+    $controller->index();
+});
 
+Flight::route('GET /dons/create', function() {
+    require_once __DIR__ . '/../controllers/DonController.php';
+    $controller = new DonController();
+    $controller->create();
+});
 
-	$router->get('/hello-world/@name', function($name) {
-		echo '<h1>Hello world! Oh hey '.$name.'!</h1>';
-	});
+Flight::route('POST /dons/store', function() {
+    require_once __DIR__ . '/../controllers/DonController.php';
+    $controller = new DonController();
+    $controller->store();
+});
 
-	$router->group('/api', function() use ($router) {
-		$router->get('/users', [ ApiExampleController::class, 'getUsers' ]);
-		$router->get('/users/@id:[0-9]', [ ApiExampleController::class, 'getUser' ]);
-		$router->post('/users/@id:[0-9]', [ ApiExampleController::class, 'updateUser' ]);
-	});
-	
-}, [ SecurityHeadersMiddleware::class ]);
+Flight::route('GET /villes', function() {
+    require_once __DIR__ . '/../controllers/VilleController.php';
+    $controller = new VilleController();
+    $controller->index();
+});
+
+?>
