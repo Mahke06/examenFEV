@@ -15,7 +15,7 @@
                     <option value="">Sélectionner une catégorie</option>
                     <?php foreach($categories as $categorie): ?>
                     <option value="<?php echo $categorie['id']; ?>">
-                        <?php echo htmlspecialchars($categorie['nom']); ?>
+                        <?php echo $categorie['nom']; ?>
                     </option>
                     <?php endforeach; ?>
                 </select>
@@ -26,8 +26,8 @@
                 <select class="form-select" id="type_besoin_id" name="type_besoin_id" required>
                     <option value="">Sélectionner un type de besoin</option>
                     <?php foreach($types_besoins as $type): ?>
-                    <option value="<?php echo $type['id']; ?>" data-categorie="<?php echo $type['categorie_id']; ?>" data-unite="<?php echo htmlspecialchars($type['unite']); ?>">
-                        <?php echo htmlspecialchars($type['nom']) . ' (' . htmlspecialchars($type['unite']) . ')'; ?>
+                    <option value="<?php echo $type['id']; ?>" data-categorie="<?php echo $type['categorie_id']; ?>" data-unite="<?php echo $type['unite']; ?>">
+                        <?php echo $type['nom'] . ' (' . $type['unite'] . ')'; ?>
                     </option>
                     <?php endforeach; ?>
                 </select>

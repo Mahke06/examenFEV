@@ -66,7 +66,7 @@
 <?php foreach($dashboard_data as $data): ?>
 <div class="card">
     <div class="card-header bg-primary text-white">
-        <h4 class="mb-0"><?php echo htmlspecialchars($data['ville']['nom']); ?> - <?php echo htmlspecialchars($data['ville']['region_nom']); ?></h4>
+        <h4 class="mb-0"><?php echo $data['ville']['nom']; ?> - <?php echo $data['ville']['region_nom']; ?></h4>
     </div>
     <div class="card-body">
         <div class="row">
@@ -87,14 +87,14 @@
                     <tbody>
                         <?php foreach($data['besoins'] as $besoin): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($besoin['type_besoin_nom']); ?></td>
-                            <td><?php echo htmlspecialchars($besoin['categorie_nom']); ?></td>
-                            <td><?php echo $besoin['quantite_demandee'] . ' ' . htmlspecialchars($besoin['unite']); ?></td>
-                            <td><?php echo $besoin['quantite_satisfaite'] . ' ' . htmlspecialchars($besoin['unite']); ?></td>
+                            <td><?php echo $besoin['type_besoin_nom']; ?></td>
+                            <td><?php echo $besoin['categorie_nom']; ?></td>
+                            <td><?php echo $besoin['quantite_demandee'] . ' ' . $besoin['unite']; ?></td>
+                            <td><?php echo $besoin['quantite_satisfaite'] . ' ' . $besoin['unite']; ?></td>
                             <td>
                                 <?php 
                                 $reste = $besoin['quantite_demandee'] - $besoin['quantite_satisfaite'];
-                                echo $reste . ' ' . htmlspecialchars($besoin['unite']); 
+                                echo $reste . ' ' . $besoin['unite']; 
                                 ?>
                             </td>
                             <td><?php echo number_format($besoin['quantite_demandee'] * $besoin['prix_unitaire'], 0, ',', ' ') . ' Ar'; ?></td>
@@ -122,8 +122,8 @@
                     <tbody>
                         <?php foreach($data['attributions'] as $attribution): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($attribution['type_besoin_nom']); ?></td>
-                            <td><?php echo $attribution['quantite_attribuee'] . ' ' . htmlspecialchars($attribution['unite']); ?></td>
+                            <td><?php echo $attribution['type_besoin_nom']; ?></td>
+                            <td><?php echo $attribution['quantite_attribuee'] . ' ' . $attribution['unite']; ?></td>
                             <td><?php echo number_format($attribution['quantite_attribuee'] * $attribution['prix_unitaire'], 0, ',', ' ') . ' Ar'; ?></td>
                             <td><?php echo date('d/m/Y H:i', strtotime($attribution['date_attribution'])); ?></td>
                         </tr>

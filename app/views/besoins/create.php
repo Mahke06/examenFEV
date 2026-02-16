@@ -11,7 +11,7 @@
                     <option value="">Sélectionner une ville</option>
                     <?php foreach($villes as $ville): ?>
                     <option value="<?php echo $ville['id']; ?>">
-                        <?php echo htmlspecialchars($ville['nom']) . ' (' . htmlspecialchars($ville['region_nom']) . ')'; ?>
+                        <?php echo $ville['nom'] . ' (' . $ville['region_nom'] . ')'; ?>
                     </option>
                     <?php endforeach; ?>
                 </select>
@@ -23,7 +23,7 @@
                     <option value="">Sélectionner une catégorie</option>
                     <?php foreach($categories as $categorie): ?>
                     <option value="<?php echo $categorie['id']; ?>">
-                        <?php echo htmlspecialchars($categorie['nom']); ?>
+                        <?php echo $categorie['nom']; ?>
                     </option>
                     <?php endforeach; ?>
                 </select>
@@ -34,8 +34,8 @@
                 <select class="form-select" id="type_besoin_id" name="type_besoin_id" required>
                     <option value="">Sélectionner un type de besoin</option>
                     <?php foreach($types_besoins as $type): ?>
-                    <option value="<?php echo $type['id']; ?>" data-categorie="<?php echo $type['categorie_id']; ?>" data-unite="<?php echo htmlspecialchars($type['unite']); ?>" data-prix="<?php echo $type['prix_unitaire']; ?>">
-                        <?php echo htmlspecialchars($type['nom']) . ' (' . number_format($type['prix_unitaire'], 0, ',', ' ') . ' Ar/' . htmlspecialchars($type['unite']) . ')'; ?>
+                    <option value="<?php echo $type['id']; ?>" data-categorie="<?php echo $type['categorie_id']; ?>" data-unite="<?php echo $type['unite']; ?>" data-prix="<?php echo $type['prix_unitaire']; ?>">
+                        <?php echo $type['nom'] . ' (' . number_format($type['prix_unitaire'], 0, ',', ' ') . ' Ar/' . $type['unite'] . ')'; ?>
                     </option>
                     <?php endforeach; ?>
                 </select>

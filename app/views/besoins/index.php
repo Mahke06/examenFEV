@@ -23,16 +23,16 @@
         <tbody>
             <?php foreach($besoins as $besoin): ?>
             <tr>
-                <td><?php echo htmlspecialchars($besoin['ville_nom']); ?></td>
-                <td><?php echo htmlspecialchars($besoin['type_besoin_nom']); ?></td>
-                <td><?php echo htmlspecialchars($besoin['categorie_nom']); ?></td>
-                <td><?php echo $besoin['quantite_demandee'] . ' ' . htmlspecialchars($besoin['unite']); ?></td>
-                <td><?php echo $besoin['quantite_satisfaite'] . ' ' . htmlspecialchars($besoin['unite']); ?></td>
+                <td><?php echo $besoin['ville_nom']; ?></td>
+                <td><?php echo $besoin['type_besoin_nom']; ?></td>
+                <td><?php echo $besoin['categorie_nom']; ?></td>
+                <td><?php echo $besoin['quantite_demandee'] . ' ' . $besoin['unite']; ?></td>
+                <td><?php echo $besoin['quantite_satisfaite'] . ' ' . $besoin['unite']; ?></td>
                 <td>
                     <?php 
                     $reste = $besoin['quantite_demandee'] - $besoin['quantite_satisfaite'];
                     $class = $reste == 0 ? 'text-success' : 'text-danger';
-                    echo "<span class='$class'>" . $reste . ' ' . htmlspecialchars($besoin['unite']) . "</span>"; 
+                    echo "<span class='$class'>" . $reste . ' ' . $besoin['unite'] . "</span>"; 
                     ?>
                 </td>
                 <td><?php echo number_format($besoin['prix_unitaire'], 0, ',', ' ') . ' Ar'; ?></td>

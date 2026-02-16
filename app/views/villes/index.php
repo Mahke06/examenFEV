@@ -14,8 +14,8 @@
         <tbody>
             <?php foreach($villes as $ville): ?>
             <tr>
-                <td><?php echo htmlspecialchars($ville['nom']); ?></td>
-                <td><?php echo htmlspecialchars($ville['region_nom']); ?></td>
+                <td><?php echo $ville['nom']; ?></td>
+                <td><?php echo $ville['region_nom']; ?></td>
                 <td><?php echo number_format($ville['nombre_sinistres'], 0, ',', ' '); ?></td>
             </tr>
             <?php endforeach; ?>
