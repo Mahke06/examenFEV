@@ -97,7 +97,7 @@ class DonController {
         if($quantite_restante == 0) {
             $this->don->updateStatut($don_id, 'distribué');
         } else {
-            $this->don->updateStatut($don_id, 'partiellement distribué');
+            $this->don->updateStatut($don_id, 'partiel');
         }
     }
 }

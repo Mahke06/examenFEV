@@ -26,7 +26,7 @@
                 <td><?php echo $don['quantite_restante'] . ' ' . htmlspecialchars($don['unite']); ?></td>
                 <td>
                     <?php 
-                    $badge_class = $don['statut'] == 'distribué' ? 'bg-success' : ($don['statut'] == 'partiellement distribué' ? 'bg-warning' : 'bg-secondary');
+                    $badge_class = $don['statut'] == 'distribué' ? 'bg-success' : ($don['statut'] == 'partiel' ? 'bg-warning' : 'bg-secondary');
                     echo "<span class='badge $badge_class'>" . htmlspecialchars($don['statut']) . "</span>"; 
                     ?>
                 </td>
