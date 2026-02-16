@@ -8,7 +8,6 @@
             <tr>
                 <th>Ville</th>
                 <th>Région</th>
-                <th>Nombre de sinistrés</th>
             </tr>
         </thead>
         <tbody>
@@ -16,7 +15,6 @@
             <tr>
                 <td><?php echo $ville['nom']; ?></td>
                 <td><?php echo $ville['region_nom']; ?></td>
-                <td><?php echo number_format($ville['nombre_sinistres'], 0, ',', ' '); ?></td>
             </tr>
             <?php endforeach; ?>
         </tbody>

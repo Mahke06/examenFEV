@@ -6,19 +6,19 @@
 
 <?php if (isset($_GET['success'])): ?>
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <strong>✅ Succès !</strong> <?php echo htmlspecialchars($_GET['success']); ?>
+        <strong>✅ Succès !</strong> <?php echo $_GET['success']; ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 <?php endif; ?>
 
 <?php if (isset($_GET['error'])): ?>
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <strong>⚠️ Erreur !</strong> <?php echo htmlspecialchars($_GET['error']); ?>
+        <strong>⚠️ Erreur !</strong> <?php echo $_GET['error']; ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 <?php endif; ?>
 
-<!-- État actuel -->
+
 <div class="row mb-4">
     <div class="col-md-6">
         <div class="card">
@@ -43,16 +43,16 @@
                                 <?php foreach ($dons_disponibles as $don): ?>
                                 <tr>
                                     <td><?php echo $don['id']; ?></td>
-                                    <td><?php echo htmlspecialchars($don['type_besoin_nom']); ?></td>
+                                    <td><?php echo $don['type_besoin_nom']; ?></td>
                                     <td>
                                         <span class="badge bg-<?php 
                                             echo $don['categorie_nom'] === 'en Nature' ? 'success' : 
                                                 ($don['categorie_nom'] === 'en Materiaux' ? 'warning' : 'info'); 
                                         ?>">
-                                            <?php echo htmlspecialchars($don['categorie_nom']); ?>
+                                            <?php echo $don['categorie_nom']; ?>
                                         </span>
                                     </td>
-                                    <td><strong><?php echo $don['quantite_restante'] . ' ' . htmlspecialchars($don['unite']); ?></strong></td>
+                                    <td><strong><?php echo $don['quantite_restante'] . ' ' . $don['unite']; ?></strong></td>
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -83,11 +83,11 @@
                             <tbody>
                                 <?php foreach ($besoins_non_satisfaits as $besoin): ?>
                                 <tr>
-                                    <td><?php echo htmlspecialchars($besoin['ville_nom']); ?></td>
-                                    <td><?php echo htmlspecialchars($besoin['type_besoin_nom']); ?></td>
+                                    <td><?php echo $besoin['ville_nom']; ?></td>
+                                    <td><?php echo $besoin['type_besoin_nom']; ?></td>
                                     <td>
                                         <span class="text-danger fw-bold">
-                                            <?php echo ($besoin['quantite_demandee'] - $besoin['quantite_satisfaite']) . ' ' . htmlspecialchars($besoin['unite']); ?>
+                                            <?php echo ($besoin['quantite_demandee'] - $besoin['quantite_satisfaite']) . ' ' . $besoin['unite']; ?>
                                         </span>
                                     </td>
                                 </tr>
@@ -101,7 +101,7 @@
     </div>
 </div>
 
-<!-- Bouton Simuler -->
+
 <div class="text-center mb-4">
     <?php if (!empty($dons_disponibles) && !empty($besoins_non_satisfaits)): ?>
         <a href="/simulation/simuler" class="btn btn-primary btn-lg">
@@ -121,7 +121,7 @@
     <?php endif; ?>
 </div>
 
-<!-- Résultat de la simulation -->
+
 <?php if ($simulation !== null): ?>
 <div class="card mb-4">
     <div class="card-header bg-success text-white">
@@ -135,7 +135,7 @@
             </div>
         <?php else: ?>
 
-            <!-- Résumé -->
+
             <div class="row mb-4">
                 <div class="col-md-6">
                     <div class="card stat-card bg-primary text-white">
@@ -155,7 +155,7 @@
                 </div>
             </div>
 
-            <!-- Détail des attributions -->
+
             <h5 class="mb-3">📝 Détail des attributions prévues</h5>
             <div class="table-responsive mb-4">
                 <table class="table table-striped table-bordered">
@@ -174,27 +174,27 @@
                         <?php foreach ($simulation['attributions'] as $attr): ?>
                         <tr>
                             <td><?php echo $attr['don_id']; ?></td>
-                            <td><?php echo htmlspecialchars($attr['type_besoin_nom']); ?></td>
+                            <td><?php echo $attr['type_besoin_nom']; ?></td>
                             <td>
                                 <span class="badge bg-<?php 
                                     echo $attr['categorie_nom'] === 'en Nature' ? 'success' : 
                                         ($attr['categorie_nom'] === 'en Materiaux' ? 'warning' : 'info'); 
                                 ?>">
-                                    <?php echo htmlspecialchars($attr['categorie_nom']); ?>
+                                    <?php echo $attr['categorie_nom']; ?>
                                 </span>
                             </td>
-                            <td><strong><?php echo htmlspecialchars($attr['ville_nom']); ?></strong></td>
+                            <td><strong><?php echo $attr['ville_nom']; ?></strong></td>
                             <td>
                                 <span class="badge bg-primary fs-6">
-                                    <?php echo $attr['quantite'] . ' ' . htmlspecialchars($attr['unite']); ?>
+                                    <?php echo $attr['quantite'] . ' ' . $attr['unite']; ?>
                                 </span>
                             </td>
-                            <td><?php echo $attr['besoin_avant'] . ' ' . htmlspecialchars($attr['unite']); ?></td>
+                            <td><?php echo $attr['besoin_avant'] . ' ' . $attr['unite']; ?></td>
                             <td>
                                 <?php if ($attr['besoin_apres'] <= 0): ?>
                                     <span class="badge bg-success">✅ Satisfait</span>
                                 <?php else: ?>
-                                    <span class="text-danger"><?php echo $attr['besoin_apres'] . ' ' . htmlspecialchars($attr['unite']); ?></span>
+                                    <span class="text-danger"><?php echo $attr['besoin_apres'] . ' ' . $attr['unite']; ?></span>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -203,7 +203,7 @@
                 </table>
             </div>
 
-            <!-- Impact sur les dons -->
+            
             <h5 class="mb-3">🎁 Impact sur les dons</h5>
             <div class="table-responsive mb-4">
                 <table class="table table-striped table-bordered">
@@ -222,10 +222,10 @@
                         <?php if ($don_info['distribue'] > 0): ?>
                         <tr>
                             <td><?php echo $don_info['don_id']; ?></td>
-                            <td><?php echo htmlspecialchars($don_info['type_besoin_nom']); ?></td>
-                            <td><?php echo $don_info['restant_avant'] . ' ' . htmlspecialchars($don_info['unite']); ?></td>
-                            <td><span class="text-success fw-bold">-<?php echo $don_info['distribue'] . ' ' . htmlspecialchars($don_info['unite']); ?></span></td>
-                            <td><?php echo $don_info['restant_apres'] . ' ' . htmlspecialchars($don_info['unite']); ?></td>
+                            <td><?php echo $don_info['type_besoin_nom']; ?></td>
+                            <td><?php echo $don_info['restant_avant'] . ' ' . $don_info['unite']; ?></td>
+                            <td><span class="text-success fw-bold">-<?php echo $don_info['distribue'] . ' ' . $don_info['unite']; ?></span></td>
+                            <td><?php echo $don_info['restant_apres'] . ' ' . $don_info['unite']; ?></td>
                             <td>
                                 <?php if ($don_info['restant_apres'] <= 0): ?>
                                     <span class="badge bg-success">Entièrement distribué</span>
@@ -240,7 +240,7 @@
                 </table>
             </div>
 
-            <!-- Bouton Valider -->
+            
             <div class="text-center">
                 <form method="POST" action="/simulation/valider" onsubmit="return confirm('Êtes-vous sûr de vouloir valider cette distribution ? Cette action est irréversible.');">
                     <button type="submit" class="btn btn-success btn-lg">
