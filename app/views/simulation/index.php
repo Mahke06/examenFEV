@@ -19,8 +19,8 @@
 <?php endif; ?>
 
 <!-- État actuel -->
-<div class="row mb-4">
-    <div class="col-md-6">
+<div class="row g-3 mb-4">
+    <div class="col-12 col-xl-6">
         <div class="card">
             <div class="card-header bg-primary text-white">
                 <h4 class="mb-0">🎁 Dons disponibles</h4>
@@ -62,7 +62,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-12 col-xl-6">
         <div class="card">
             <div class="card-header bg-danger text-white">
                 <h4 class="mb-0">📋 Besoins non satisfaits</h4>
@@ -136,8 +136,8 @@
         <?php else: ?>
 
             <!-- Résumé -->
-            <div class="row mb-4">
-                <div class="col-md-6">
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6">
                     <div class="card stat-card bg-primary text-white">
                         <div class="card-body">
                             <h5>Attributions à créer</h5>
@@ -145,7 +145,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-sm-6">
                     <div class="card stat-card bg-success text-white">
                         <div class="card-body">
                             <h5>Quantité totale distribuée</h5>
@@ -158,16 +158,16 @@
             <!-- Détail des attributions -->
             <h5 class="mb-3">📝 Détail des attributions prévues</h5>
             <div class="table-responsive mb-4">
-                <table class="table table-striped table-bordered">
+                <table class="table table-striped table-bordered align-middle">
                     <thead class="table-dark">
                         <tr>
-                            <th>Don #</th>
-                            <th>Type</th>
-                            <th>Catégorie</th>
-                            <th>→ Ville</th>
-                            <th>Quantité attribuée</th>
-                            <th>Besoin avant</th>
-                            <th>Besoin après</th>
+                            <th class="text-nowrap">Don #</th>
+                            <th class="text-nowrap">Type</th>
+                            <th class="text-nowrap">Catégorie</th>
+                            <th class="text-nowrap">→ Ville</th>
+                            <th class="text-nowrap">Qté attribuée</th>
+                            <th class="text-nowrap">Besoin avant</th>
+                            <th class="text-nowrap">Besoin après</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -206,15 +206,15 @@
             <!-- Impact sur les dons -->
             <h5 class="mb-3">🎁 Impact sur les dons</h5>
             <div class="table-responsive mb-4">
-                <table class="table table-striped table-bordered">
+                <table class="table table-striped table-bordered align-middle">
                     <thead class="table-dark">
                         <tr>
-                            <th>Don #</th>
-                            <th>Type</th>
-                            <th>Restant avant</th>
-                            <th>Distribué</th>
-                            <th>Restant après</th>
-                            <th>Statut</th>
+                            <th class="text-nowrap">Don #</th>
+                            <th class="text-nowrap">Type</th>
+                            <th class="text-nowrap">Restant avant</th>
+                            <th class="text-nowrap">Distribué</th>
+                            <th class="text-nowrap">Restant après</th>
+                            <th class="text-nowrap">Statut</th>
                         </tr>
                     </thead>
                     <tbody>

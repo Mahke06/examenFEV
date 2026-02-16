@@ -3,12 +3,12 @@
 <h1 class="mb-4">Liste des villes</h1>
 
 <div class="table-responsive">
-    <table class="table table-striped table-bordered">
+    <table class="table table-striped table-bordered align-middle">
         <thead class="table-dark">
             <tr>
-                <th>Ville</th>
-                <th>Région</th>
-                <th>Nombre de sinistrés</th>
+                <th class="text-nowrap">Ville</th>
+                <th class="text-nowrap">Région</th>
+                <th class="text-nowrap">Nombre de sinistrés</th>
             </tr>
         </thead>
         <tbody>

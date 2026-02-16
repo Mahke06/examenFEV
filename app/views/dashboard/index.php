@@ -2,8 +2,8 @@
 
 <h1 class="mb-4">Tableau de bord</h1>
 
-<div class="row mb-4">
-    <div class="col-md-3">
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
         <div class="card bg-primary text-white stat-card">
             <div class="card-body">
                 <h5>Villes</h5>
@@ -11,7 +11,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-6 col-lg-3">
         <div class="card bg-success text-white stat-card">
             <div class="card-body">
                 <h5>Besoins totaux</h5>
@@ -27,7 +27,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-6 col-lg-3">
         <div class="card bg-warning text-white stat-card">
             <div class="card-body">
                 <h5>Attributions</h5>
@@ -43,7 +43,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-6 col-lg-3">
         <div class="card bg-info text-white stat-card">
             <div class="card-body">
                 <h5>Valeur totale</h5>
@@ -67,7 +67,7 @@
 <div class="card mb-4">
     <div class="card-body py-3">
         <div class="row align-items-end">
-            <div class="col-md-4">
+            <div class="col-lg-4 col-md-6">
                 <label for="filtre_ville_dashboard" class="form-label fw-bold">Filtrer par ville</label>
                 <select id="filtre_ville_dashboard" class="form-select">
                     <option value="">— Toutes les villes —</option>
@@ -88,67 +88,71 @@
         <h4 class="mb-0"><?php echo $data['ville']['nom']; ?> - <?php echo $data['ville']['region_nom']; ?></h4>
     </div>
     <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
+        <div class="row g-4">
+            <div class="col-12 col-xl-6">
                 <h5>Besoins</h5>
                 <?php if(count($data['besoins']) > 0): ?>
-                <table class="table table-sm table-bordered">
+                <div class="table-responsive">
+                <table class="table table-sm table-bordered align-middle">
                     <thead>
                         <tr>
-                            <th>Type</th>
-                            <th>Catégorie</th>
-                            <th>Demandé</th>
-                            <th>Satisfait</th>
-                            <th>Reste</th>
-                            <th>Valeur totale</th>
+                            <th class="text-nowrap">Type</th>
+                            <th class="text-nowrap">Catégorie</th>
+                            <th class="text-nowrap">Demandé</th>
+                            <th class="text-nowrap">Satisfait</th>
+                            <th class="text-nowrap">Reste</th>
+                            <th class="text-nowrap">Valeur totale</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach($data['besoins'] as $besoin): ?>
                         <tr>
-                            <td><?php echo $besoin['type_besoin_nom']; ?></td>
-                            <td><?php echo $besoin['categorie_nom']; ?></td>
-                            <td><?php echo $besoin['quantite_demandee'] . ' ' . $besoin['unite']; ?></td>
-                            <td><?php echo $besoin['quantite_satisfaite'] . ' ' . $besoin['unite']; ?></td>
-                            <td>
+                            <td class="text-nowrap"><?php echo $besoin['type_besoin_nom']; ?></td>
+                            <td class="text-nowrap"><?php echo $besoin['categorie_nom']; ?></td>
+                            <td class="text-nowrap"><?php echo $besoin['quantite_demandee'] . ' ' . $besoin['unite']; ?></td>
+                            <td class="text-nowrap"><?php echo $besoin['quantite_satisfaite'] . ' ' . $besoin['unite']; ?></td>
+                            <td class="text-nowrap">
                                 <?php 
                                 $reste = $besoin['quantite_demandee'] - $besoin['quantite_satisfaite'];
                                 echo $reste . ' ' . $besoin['unite']; 
                                 ?>
                             </td>
-                            <td><?php echo number_format($besoin['quantite_demandee'] * $besoin['prix_unitaire'], 0, ',', ' ') . ' Ar'; ?></td>
+                            <td class="text-nowrap"><?php echo number_format($besoin['quantite_demandee'] * $besoin['prix_unitaire'], 0, ',', ' ') . ' Ar'; ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                </div>
                 <?php else: ?>
                 <p class="text-muted">Aucun besoin enregistré</p>
                 <?php endif; ?>
             </div>
             
-            <div class="col-md-6">
+            <div class="col-12 col-xl-6">
                 <h5>Dons attribués</h5>
                 <?php if(count($data['attributions']) > 0): ?>
-                <table class="table table-sm table-bordered">
+                <div class="table-responsive">
+                <table class="table table-sm table-bordered align-middle">
                     <thead>
                         <tr>
-                            <th>Type</th>
-                            <th>Quantité</th>
-                            <th>Valeur</th>
-                            <th>Date</th>
+                            <th class="text-nowrap">Type</th>
+                            <th class="text-nowrap">Quantité</th>
+                            <th class="text-nowrap">Valeur</th>
+                            <th class="text-nowrap">Date</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach($data['attributions'] as $attribution): ?>
                         <tr>
-                            <td><?php echo $attribution['type_besoin_nom']; ?></td>
-                            <td><?php echo $attribution['quantite_attribuee'] . ' ' . $attribution['unite']; ?></td>
-                            <td><?php echo number_format($attribution['quantite_attribuee'] * $attribution['prix_unitaire'], 0, ',', ' ') . ' Ar'; ?></td>
-                            <td><?php echo date('d/m/Y H:i', strtotime($attribution['date_attribution'])); ?></td>
+                            <td class="text-nowrap"><?php echo $attribution['type_besoin_nom']; ?></td>
+                            <td class="text-nowrap"><?php echo $attribution['quantite_attribuee'] . ' ' . $attribution['unite']; ?></td>
+                            <td class="text-nowrap"><?php echo number_format($attribution['quantite_attribuee'] * $attribution['prix_unitaire'], 0, ',', ' ') . ' Ar'; ?></td>
+                            <td class="text-nowrap"><?php echo date('d/m/Y H:i', strtotime($attribution['date_attribution'])); ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                </div>
                 <?php else: ?>
                 <p class="text-muted">Aucun don attribué</p>
                 <?php endif; ?>

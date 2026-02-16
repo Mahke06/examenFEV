@@ -1,6 +1,6 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
     <h1>📊 Récapitulation financière</h1>
     <button id="btn-actualiser" class="btn btn-primary" onclick="actualiserDonnees()">
         🔄 Actualiser
@@ -8,8 +8,8 @@
 </div>
 
 <!-- KPI Cards -->
-<div class="row mb-4">
-    <div class="col-md-4">
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-4">
         <div class="card border-0 shadow-sm">
             <div class="card-body text-center" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: var(--radius-lg); color: white;">
                 <h6 class="text-uppercase mb-2" style="opacity:0.85;">Besoins Totaux</h6>
@@ -20,7 +20,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-sm-6 col-lg-4">
         <div class="card border-0 shadow-sm">
             <div class="card-body text-center" style="background: linear-gradient(135deg, var(--success), var(--success-light)); border-radius: var(--radius-lg); color: white;">
                 <h6 class="text-uppercase mb-2" style="opacity:0.85;">Besoins Satisfaits</h6>
@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-sm-6 col-lg-4">
         <div class="card border-0 shadow-sm">
             <div class="card-body text-center" style="background: linear-gradient(135deg, var(--danger), var(--danger-light)); border-radius: var(--radius-lg); color: white;">
                 <h6 class="text-uppercase mb-2" style="opacity:0.85;">Besoins Restants</h6>
@@ -67,8 +67,8 @@
 </div>
 
 <!-- KPI secondaires -->
-<div class="row mb-4">
-    <div class="col-md-4">
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-4">
         <div class="card">
             <div class="card-body text-center">
                 <h6 class="text-muted text-uppercase mb-1">Dons Totaux Reçus</h6>
@@ -78,7 +78,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-sm-6 col-lg-4">
         <div class="card">
             <div class="card-body text-center">
                 <h6 class="text-muted text-uppercase mb-1">Total Achats Effectués</h6>
@@ -88,7 +88,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-sm-6 col-lg-4">
         <div class="card">
             <div class="card-body text-center">
                 <h6 class="text-muted text-uppercase mb-1">Solde Argent Disponible</h6>
@@ -110,11 +110,11 @@
             <table class="table table-striped mb-0">
                 <thead class="table-dark">
                     <tr>
-                        <th>Ville</th>
-                        <th class="text-end">Besoins Totaux (Ar)</th>
-                        <th class="text-end">Satisfaits (Ar)</th>
-                        <th class="text-end">Restants (Ar)</th>
-                        <th style="width: 200px;">Progression</th>
+                        <th class="text-nowrap">Ville</th>
+                        <th class="text-end text-nowrap">Besoins Totaux (Ar)</th>
+                        <th class="text-end text-nowrap">Satisfaits (Ar)</th>
+                        <th class="text-end text-nowrap">Restants (Ar)</th>
+                        <th class="text-nowrap" style="min-width: 150px;">Progression</th>
                     </tr>
                 </thead>
                 <tbody id="table-villes">
@@ -149,11 +149,11 @@
             <table class="table table-striped mb-0">
                 <thead class="table-dark">
                     <tr>
-                        <th>Catégorie</th>
-                        <th class="text-end">Besoins Totaux (Ar)</th>
-                        <th class="text-end">Satisfaits (Ar)</th>
-                        <th class="text-end">Restants (Ar)</th>
-                        <th style="width: 200px;">Progression</th>
+                        <th class="text-nowrap">Catégorie</th>
+                        <th class="text-end text-nowrap">Besoins Totaux (Ar)</th>
+                        <th class="text-end text-nowrap">Satisfaits (Ar)</th>
+                        <th class="text-end text-nowrap">Restants (Ar)</th>
+                        <th class="text-nowrap" style="min-width: 150px;">Progression</th>
                     </tr>
                 </thead>
                 <tbody id="table-categories">

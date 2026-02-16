@@ -1,6 +1,6 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
     <h1>📦 Liste des achats</h1>
     <a href="/achats/create" class="btn btn-primary">Nouvel achat</a>
 </div>
@@ -52,39 +52,39 @@
     foreach ($achats as $a) { $total_general += $a['montant_total']; }
     ?>
     <div class="table-responsive">
-        <table class="table table-striped table-bordered">
+        <table class="table table-striped table-bordered align-middle">
             <thead class="table-dark">
                 <tr>
-                    <th>#</th>
-                    <th>Ville</th>
-                    <th>Type de besoin</th>
-                    <th>Catégorie</th>
-                    <th>Quantité</th>
-                    <th>Prix unitaire</th>
-                    <th>Sous-total HT</th>
-                    <th>Frais (%)</th>
-                    <th>Montant total</th>
-                    <th>Date</th>
-                    <th>Actions</th>
+                    <th class="text-nowrap">#</th>
+                    <th class="text-nowrap">Ville</th>
+                    <th class="text-nowrap">Type de besoin</th>
+                    <th class="text-nowrap">Catégorie</th>
+                    <th class="text-nowrap">Quantité</th>
+                    <th class="text-nowrap">Prix unitaire</th>
+                    <th class="text-nowrap">Sous-total HT</th>
+                    <th class="text-nowrap">Frais (%)</th>
+                    <th class="text-nowrap">Montant total</th>
+                    <th class="text-nowrap">Date</th>
+                    <th class="text-nowrap">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($achats as $index => $achat): ?>
                 <tr>
-                    <td><?php echo $index + 1; ?></td>
-                    <td><?php echo htmlspecialchars($achat['ville_nom']); ?></td>
-                    <td><?php echo htmlspecialchars($achat['type_besoin_nom']); ?></td>
+                    <td class="text-nowrap"><?php echo $index + 1; ?></td>
+                    <td class="text-nowrap"><?php echo htmlspecialchars($achat['ville_nom']); ?></td>
+                    <td class="text-nowrap"><?php echo htmlspecialchars($achat['type_besoin_nom']); ?></td>
                     <td>
                         <span class="badge bg-<?php echo $achat['categorie_nom'] === 'en Nature' ? 'success' : 'warning'; ?>">
                             <?php echo htmlspecialchars($achat['categorie_nom']); ?>
                         </span>
                     </td>
-                    <td><?php echo number_format($achat['quantite'], 0, ',', ' ') . ' ' . htmlspecialchars($achat['unite']); ?></td>
-                    <td><?php echo number_format($achat['prix_unitaire'], 0, ',', ' '); ?> Ar</td>
-                    <td><?php echo number_format($achat['quantite'] * $achat['prix_unitaire'], 0, ',', ' '); ?> Ar</td>
-                    <td><span class="badge bg-info"><?php echo $achat['frais_pourcent']; ?>%</span></td>
-                    <td><strong><?php echo number_format($achat['montant_total'], 0, ',', ' '); ?> Ar</strong></td>
-                    <td><?php echo date('d/m/Y H:i', strtotime($achat['date_achat'])); ?></td>
+                    <td class="text-nowrap"><?php echo number_format($achat['quantite'], 0, ',', ' ') . ' ' . htmlspecialchars($achat['unite']); ?></td>
+                    <td class="text-nowrap"><?php echo number_format($achat['prix_unitaire'], 0, ',', ' '); ?> Ar</td>
+                    <td class="text-nowrap"><?php echo number_format($achat['quantite'] * $achat['prix_unitaire'], 0, ',', ' '); ?> Ar</td>
+                    <td class="text-nowrap"><span class="badge bg-info"><?php echo $achat['frais_pourcent']; ?>%</span></td>
+                    <td class="text-nowrap"><strong><?php echo number_format($achat['montant_total'], 0, ',', ' '); ?> Ar</strong></td>
+                    <td class="text-nowrap"><?php echo date('d/m/Y H:i', strtotime($achat['date_achat'])); ?></td>
                     <td>
                         <form method="POST" action="/achats/delete" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet achat ? Le montant sera restauré au don en argent.');">
                             <input type="hidden" name="id" value="<?php echo $achat['id']; ?>">
@@ -96,8 +96,8 @@
             </tbody>
             <tfoot>
                 <tr class="table-dark">
-                    <td colspan="9" class="text-end fw-bold">Total général :</td>
-                    <td colspan="2" class="fw-bold"><?php echo number_format($total_general, 0, ',', ' '); ?> Ar</td>
+                    <td colspan="8" class="text-end fw-bold text-nowrap">Total général :</td>
+                    <td colspan="3" class="fw-bold text-nowrap"><?php echo number_format($total_general, 0, ',', ' '); ?> Ar</td>
                 </tr>
             </tfoot>
         </table>

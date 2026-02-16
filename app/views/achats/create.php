@@ -1,13 +1,13 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
     <h1>🛒 Nouvel achat</h1>
     <a href="/achats" class="btn btn-secondary">← Retour à la liste</a>
 </div>
 
 <!-- Solde disponible -->
-<div class="row mb-4">
-    <div class="col-md-6">
+<div class="row g-3 mb-4">
+    <div class="col-sm-6">
         <div class="card stat-card bg-primary text-white">
             <div class="card-body">
                 <h5>💰 Solde argent disponible</h5>
@@ -15,7 +15,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-sm-6">
         <div class="card stat-card bg-warning text-dark">
             <div class="card-body">
                 <h5>📊 Frais d'achat appliqué</h5>
@@ -74,16 +74,16 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table table-striped table-bordered table-hover" id="tableBesoins">
+            <table class="table table-striped table-bordered table-hover align-middle" id="tableBesoins">
                 <thead class="table-dark">
                     <tr>
-                        <th>Ville</th>
-                        <th>Type</th>
-                        <th>Catégorie</th>
-                        <th>Qté restante</th>
-                        <th>Prix unit.</th>
-                        <th>Coût estimé (+ <?php echo $frais_achat; ?>%)</th>
-                        <th>Action</th>
+                        <th class="text-nowrap">Ville</th>
+                        <th class="text-nowrap">Type</th>
+                        <th class="text-nowrap">Catégorie</th>
+                        <th class="text-nowrap">Qté restante</th>
+                        <th class="text-nowrap">Prix unit.</th>
+                        <th class="text-nowrap">Coût estimé (+ <?php echo $frais_achat; ?>%)</th>
+                        <th class="text-nowrap">Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -94,16 +94,16 @@
                         $cout_total = $cout_ht * (1 + $frais_achat / 100);
                     ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($besoin['ville_nom']); ?></td>
-                        <td><?php echo htmlspecialchars($besoin['type_besoin_nom']); ?></td>
+                        <td class="text-nowrap"><?php echo htmlspecialchars($besoin['ville_nom']); ?></td>
+                        <td class="text-nowrap"><?php echo htmlspecialchars($besoin['type_besoin_nom']); ?></td>
                         <td>
                             <span class="badge bg-<?php echo $besoin['categorie_nom'] === 'en Nature' ? 'success' : 'warning'; ?>">
                                 <?php echo htmlspecialchars($besoin['categorie_nom']); ?>
                             </span>
                         </td>
-                        <td><?php echo $qte_restante . ' ' . htmlspecialchars($besoin['unite']); ?></td>
-                        <td><?php echo number_format($besoin['prix_unitaire'], 0, ',', ' '); ?> Ar</td>
-                        <td><strong><?php echo number_format($cout_total, 0, ',', ' '); ?> Ar</strong></td>
+                        <td class="text-nowrap"><?php echo $qte_restante . ' ' . htmlspecialchars($besoin['unite']); ?></td>
+                        <td class="text-nowrap"><?php echo number_format($besoin['prix_unitaire'], 0, ',', ' '); ?> Ar</td>
+                        <td class="text-nowrap"><strong><?php echo number_format($cout_total, 0, ',', ' '); ?> Ar</strong></td>
                         <td>
                             <button type="button" class="btn btn-sm btn-primary btn-acheter"
                                 data-besoin-id="<?php echo $besoin['id']; ?>"
