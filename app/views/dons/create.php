@@ -10,6 +10,19 @@
 
         <form method="POST" action="/dons/store">
             <div class="mb-3">
+                <label for="ville_id" class="form-label">Ville</label>
+                <select class="form-select" id="ville_id" name="ville_id">
+                    <option value="">— Toutes les villes —</option>
+                    <?php foreach($villes as $ville): ?>
+                    <option value="<?php echo $ville['id']; ?>">
+                        <?php echo htmlspecialchars($ville['nom']) . ' (' . htmlspecialchars($ville['region_nom']) . ')'; ?>
+                    </option>
+                    <?php endforeach; ?>
+                </select>
+                <small class="form-text text-muted">Optionnel : filtrer la distribution vers une ville spécifique</small>
+            </div>
+
+            <div class="mb-3">
                 <label for="categorie_id" class="form-label">Catégorie</label>
                 <select class="form-select" id="categorie_id" name="categorie_id" required>
                     <option value="">Sélectionner une catégorie</option>

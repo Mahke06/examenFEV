@@ -4,6 +4,7 @@ require_once __DIR__ . '/../models/TypeBesoin.php';
 require_once __DIR__ . '/../models/CategorieBesoin.php';
 require_once __DIR__ . '/../models/Besoin.php';
 require_once __DIR__ . '/../models/Attribution.php';
+require_once __DIR__ . '/../models/Ville.php';
 
 class DonController {
     private $db;
@@ -12,6 +13,7 @@ class DonController {
     private $categorie;
     private $besoin;
     private $attribution;
+    private $ville;
     
     public function __construct() {
         $config = require __DIR__ . '/../config/config.php';
@@ -34,6 +36,7 @@ class DonController {
         $this->categorie = new CategorieBesoin($this->db);
         $this->besoin = new Besoin($this->db);
         $this->attribution = new Attribution($this->db);
+        $this->ville = new Ville($this->db);
     }
     
     public function index() {
@@ -44,6 +47,7 @@ class DonController {
     public function create() {
         $categories = $this->categorie->getAll()->fetchAll(PDO::FETCH_ASSOC);
         $types_besoins = $this->typeBesoin->getAll()->fetchAll(PDO::FETCH_ASSOC);
+        $villes = $this->ville->getAll()->fetchAll(PDO::FETCH_ASSOC);
         require_once __DIR__ . '/../views/dons/create.php';
     }
     
@@ -98,6 +102,43 @@ class DonController {
             $this->don->updateStatut($don_id, 'distribué');
         } else {
             $this->don->updateStatut($don_id, 'partiel');
+        }
+    }
+
+    /**
+     * Supprime un don et annule ses attributions
+     */
+    public function delete() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header("Location: /dons");
+            exit();
+        }
+
+        $don_id = (int)$_POST['id'];
+
+        try {
+            $this->db->beginTransaction();
+
+            // 1. Récupérer les attributions liées à ce don
+            $attributions = $this->attribution->getByDonId($don_id);
+
+            // 2. Annuler chaque attribution : réduire quantite_satisfaite du besoin
+            foreach ($attributions as $attr) {
+                $this->besoin->reduireQuantiteSatisfaite($attr['besoin_id'], $attr['quantite_attribuee']);
+            }
+
+            // 3. Supprimer les attributions
+            $this->attribution->deleteByDonId($don_id);
+
+            // 4. Supprimer le don
+            $this->don->delete($don_id);
+
+            $this->db->commit();
+            header("Location: /dons");
+            exit();
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            die("Erreur lors de la suppression du don : " . $e->getMessage());
         }
     }
 }

@@ -26,6 +26,15 @@
                     <a class="nav-link" href="/dons">Dons</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="/achats">Achats</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/simulation">Simulation</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/recapitulation">Récapitulation</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="/villes">Villes</a>
                 </li>
             </ul>

@@ -18,6 +18,7 @@
                 <th>Prix unitaire</th>
                 <th>Valeur totale</th>
                 <th>Date</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -38,6 +39,12 @@
                 <td><?php echo number_format($besoin['prix_unitaire'], 0, ',', ' ') . ' Ar'; ?></td>
                 <td><?php echo number_format($besoin['quantite_demandee'] * $besoin['prix_unitaire'], 0, ',', ' ') . ' Ar'; ?></td>
                 <td><?php echo date('d/m/Y H:i', strtotime($besoin['date_saisie'])); ?></td>
+                <td>
+                    <form method="POST" action="/besoins/delete" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce besoin ? Les attributions et achats liés seront annulés.');">
+                        <input type="hidden" name="id" value="<?php echo $besoin['id']; ?>">
+                        <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                    </form>
+                </td>
             </tr>
             <?php endforeach; ?>
         </tbody>

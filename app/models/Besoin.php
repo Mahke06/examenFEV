@@ -64,5 +64,65 @@ class Besoin {
         $stmt->bindParam(2, $besoin_id);
         return $stmt->execute();
     }
+
+    /**
+     * Retourne les besoins restants en nature (cat 1) et matériaux (cat 2) non satisfaits
+     */
+    public function getBesoinsRestantsNonArgent() {
+        $query = "SELECT b.*, v.nom as ville_nom, tb.nom as type_besoin_nom,
+                  tb.prix_unitaire, tb.unite, cb.nom as categorie_nom,
+                  (b.quantite_demandee - b.quantite_satisfaite) as quantite_restante
+                  FROM " . $this->table . " b
+                  LEFT JOIN bngrc_ville v ON b.ville_id = v.id
+                  LEFT JOIN bngrc_type_besoin tb ON b.type_besoin_id = tb.id
+                  LEFT JOIN bngrc_categorie_besoin cb ON tb.categorie_id = cb.id
+                  WHERE cb.id IN (1, 2)
+                  AND b.quantite_satisfaite < b.quantite_demandee
+                  ORDER BY v.nom ASC, tb.nom ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    /**
+     * Retourne un besoin par son ID avec les jointures
+     */
+    public function getById($besoin_id) {
+        $query = "SELECT b.*, v.nom as ville_nom, tb.nom as type_besoin_nom,
+                  tb.prix_unitaire, tb.unite, cb.nom as categorie_nom,
+                  (b.quantite_demandee - b.quantite_satisfaite) as quantite_restante
+                  FROM " . $this->table . " b
+                  LEFT JOIN bngrc_ville v ON b.ville_id = v.id
+                  LEFT JOIN bngrc_type_besoin tb ON b.type_besoin_id = tb.id
+                  LEFT JOIN bngrc_categorie_besoin cb ON tb.categorie_id = cb.id
+                  WHERE b.id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $besoin_id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Supprime un besoin par son ID
+     */
+    public function delete($id) {
+        $query = "DELETE FROM " . $this->table . " WHERE id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $id, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    /**
+     * Réduit la quantité satisfaite d'un besoin
+     */
+    public function reduireQuantiteSatisfaite($besoin_id, $quantite) {
+        $query = "UPDATE " . $this->table . " 
+                  SET quantite_satisfaite = GREATEST(0, quantite_satisfaite - ?) 
+                  WHERE id = ?";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $quantite);
+        $stmt->bindParam(2, $besoin_id);
+        return $stmt->execute();
+    }
 }
 ?>

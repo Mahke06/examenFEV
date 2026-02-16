@@ -59,5 +59,70 @@ class BesoinController {
             }
         }
     }
+
+    /**
+     * Supprime un besoin et annule ses attributions et achats liés
+     */
+    public function delete() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header("Location: /besoins");
+            exit();
+        }
+
+        $besoin_id = (int)$_POST['id'];
+
+        // Charger les modèles nécessaires
+        require_once __DIR__ . '/../models/Attribution.php';
+        require_once __DIR__ . '/../models/Don.php';
+        require_once __DIR__ . '/../models/Achat.php';
+        $attribution = new Attribution($this->db);
+        $don = new Don($this->db);
+        $achat = new Achat($this->db);
+
+        try {
+            $this->db->beginTransaction();
+
+            // 1. Récupérer et annuler les attributions liées à ce besoin
+            $attributions = $attribution->getByBesoinId($besoin_id);
+            foreach ($attributions as $attr) {
+                // Restaurer la quantité restante du don
+                $don->restoreQuantiteRestante($attr['don_id'], $attr['quantite_attribuee']);
+                // Remettre le statut du don
+                $don_data = $don->getById($attr['don_id']);
+                if ($don_data) {
+                    if ($don_data['quantite_restante'] + $attr['quantite_attribuee'] >= $don_data['quantite']) {
+                        $don->updateStatut($attr['don_id'], 'non distribué');
+                    } else {
+                        $don->updateStatut($attr['don_id'], 'partiel');
+                    }
+                }
+            }
+            $attribution->deleteByBesoinId($besoin_id);
+
+            // 2. Récupérer et annuler les achats liés à ce besoin
+            $achats = $achat->getByBesoinId($besoin_id);
+            foreach ($achats as $a) {
+                // Restaurer le montant du don en argent
+                $don->restoreQuantiteRestante($a['don_argent_id'], $a['montant_total']);
+                $don_data = $don->getById($a['don_argent_id']);
+                if ($don_data && ($don_data['quantite_restante'] + $a['montant_total']) >= $don_data['quantite']) {
+                    $don->updateStatut($a['don_argent_id'], 'non distribué');
+                } else {
+                    $don->updateStatut($a['don_argent_id'], 'partiellement utilisé');
+                }
+                $achat->delete($a['id']);
+            }
+
+            // 3. Supprimer le besoin
+            $this->besoin->delete($besoin_id);
+
+            $this->db->commit();
+            header("Location: /besoins");
+            exit();
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            die("Erreur lors de la suppression du besoin : " . $e->getMessage());
+        }
+    }
 }
 ?>

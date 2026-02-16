@@ -15,6 +15,7 @@
                 <th>Quantité restante</th>
                 <th>Statut</th>
                 <th>Date de saisie</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -31,6 +32,12 @@
                     ?>
                 </td>
                 <td><?php echo date('d/m/Y H:i', strtotime($don['date_saisie'])); ?></td>
+                <td>
+                    <form method="POST" action="/dons/delete" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce don ? Les attributions liées seront annulées.');">
+                        <input type="hidden" name="id" value="<?php echo $don['id']; ?>">
+                        <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                    </form>
+                </td>
             </tr>
             <?php endforeach; ?>
         </tbody>
