@@ -22,17 +22,6 @@
                 <small class="form-text text-muted">Optionnel : filtrer la distribution vers une ville spécifique</small>
             </div>
 
-            <div class="mb-3">
-                <label for="categorie_id" class="form-label">Catégorie</label>
-                <select class="form-select" id="categorie_id" name="categorie_id" required>
-                    <option value="">Sélectionner une catégorie</option>
-                    <?php foreach($categories as $categorie): ?>
-                    <option value="<?php echo $categorie['id']; ?>">
-                        <?php echo $categorie['nom']; ?>
-                    </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
 
             <div class="mb-3">
                 <label for="type_besoin_id" class="form-label">Type de besoin</label>
