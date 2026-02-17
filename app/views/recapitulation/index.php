@@ -1,7 +1,6 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <style>
-    /* Force la structure rigide pour les tableaux récapitulatifs */
     .table-recap {
         table-layout: fixed;
         width: 100%;
@@ -18,7 +17,6 @@
         border: 1px solid #dee2e6;
     }
 
-    /* Largeurs de colonnes spécifiques */
     .col-name { width: 30%; }
     .col-amount { width: 20%; }
     .col-progress { width: 30%; }

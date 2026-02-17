@@ -1,7 +1,6 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <style>
-    /* Force la structure du tableau pour éviter les décalages */
     .table-simple {
         table-layout: fixed;
         width: 100%;
@@ -13,12 +12,11 @@
         padding: 8px;
         font-size: 0.8rem;
         overflow: hidden;
-        text-overflow: ellipsis; /* Ajoute "..." si le texte dépasse */
-        white-space: nowrap;     /* Empêche le retour à la ligne */
+        text-overflow: ellipsis;
+        white-space: nowrap;
         border: 1px solid #dee2e6;
     }
 
-    /* Définition des largeurs de colonnes pour l'alignement */
     .col-xs { width: 30px; }
     .col-md { width: 12%; }
     .col-lg { width: 15%; }
@@ -30,7 +28,7 @@
         font-size: 0.75rem;
         border-radius: 3px;
         font-weight: bold;
-    }
+    }   
 </style>
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
@@ -94,9 +92,9 @@
                 <?php foreach ($achats as $index => $achat): ?>
                 <tr>
                     <td align="center"><?php echo $index + 1; ?></td>
-                    <td><?php echo htmlspecialchars($achat['ville_nom']); ?></td>
-                    <td title="<?php echo htmlspecialchars($achat['type_besoin_nom']); ?>">
-                        <b><?php echo htmlspecialchars($achat['type_besoin_nom']); ?></b>
+                    <td><?php echo $achat['ville_nom']; ?></td>
+                    <td title="<?php echo $achat['type_besoin_nom']; ?>">
+                        <b><?php echo $achat['type_besoin_nom']; ?></b>
                     </td>
                     <td align="center">
                         <?php 

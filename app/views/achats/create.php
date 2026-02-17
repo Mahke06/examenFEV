@@ -5,7 +5,7 @@
     <a href="/achats" class="btn btn-secondary">← Retour à la liste</a>
 </div>
 
-<!-- Solde disponible -->
+
 <div class="row mb-4">
     <div class="col-md-6">
         <div class="card stat-card bg-primary text-white">
@@ -94,14 +94,14 @@
                         $cout_total = $cout_ht * (1 + $frais_achat / 100);
                     ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($besoin['ville_nom']); ?></td>
-                        <td><?php echo htmlspecialchars($besoin['type_besoin_nom']); ?></td>
+                        <td><?php echo $besoin['ville_nom']; ?></td>
+                        <td><?php echo $besoin['type_besoin_nom']; ?></td>
                         <td>
                             <span class="badge bg-<?php echo $besoin['categorie_nom'] === 'en Nature' ? 'success' : 'warning'; ?>">
                                 <?php echo $besoin['categorie_nom']; ?>
                             </span>
                         </td>
-                        <td><?php echo $qte_restante . ' ' . htmlspecialchars($besoin['unite']); ?></td>
+                        <td><?php echo $qte_restante . ' ' . $besoin['unite']; ?></td>
                         <td><?php echo number_format($besoin['prix_unitaire'], 0, ',', ' '); ?> Ar</td>
                         <td><strong><?php echo number_format($cout_total, 0, ',', ' '); ?> Ar</strong></td>
                         <td>

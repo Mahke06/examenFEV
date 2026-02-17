@@ -1,7 +1,6 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <style>
-    /* Force le tableau à garder sa structure peu importe la taille du contenu */
     .table-simple {
         table-layout: fixed;
         width: 100%;
@@ -13,11 +12,10 @@
         padding: 8px;
         font-size: 0.85rem;
         overflow: hidden;
-        text-overflow: ellipsis; /* Ajoute "..." si le texte dépasse */
-        white-space: nowrap;     /* Empêche le retour à la ligne */
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
-    /* Définition manuelle des largeurs pour garantir l'alignement */
     .w-15 { width: 15%; }
     .w-10 { width: 10%; }
     .w-action { width: 80px; }

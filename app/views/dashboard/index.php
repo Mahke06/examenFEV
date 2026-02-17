@@ -1,7 +1,6 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <style>
-    /* Force la structure du tableau pour éviter le décalage des colonnes */
     .table-fixed {
         table-layout: fixed;
         width: 100%;
@@ -10,14 +9,13 @@
     
     .table-fixed th, .table-fixed td {
         overflow: hidden;
-        text-overflow: ellipsis; /* Ajoute "..." si le texte est trop long */
+        text-overflow: ellipsis;
         white-space: nowrap;
         font-size: 0.85rem;
         padding: 0.5rem !important;
         vertical-align: middle;
     }
 
-    /* Largeurs fixes pour un alignement parfait entre Header et Body */
     .col-type { width: 25%; }
     .col-cat { width: 20%; }
     .col-qte { width: 15%; }
@@ -94,8 +92,8 @@
                 <select id="filtre_ville_dashboard" class="form-select form-select-sm">
                     <option value="">— Toutes les villes —</option>
                     <?php foreach($dashboard_data as $data): ?>
-                    <option value="<?php echo htmlspecialchars($data['ville']['nom']); ?>">
-                        <?php echo htmlspecialchars($data['ville']['nom']); ?>
+                    <option value="<?php echo $data['ville']['nom']; ?>">
+                        <?php echo $data['ville']['nom']; ?>
                     </option>
                     <?php endforeach; ?>
                 </select>
@@ -105,7 +103,7 @@
 </div>
 
 <?php foreach($dashboard_data as $data): ?>
-<div class="card ville-card shadow-sm" data-ville="<?php echo htmlspecialchars($data['ville']['nom']); ?>">
+<div class="card ville-card shadow-sm" data-ville="<?php echo $data['ville']['nom']; ?>">
     <div class="card-header bg-primary text-white py-2">
         <h5 class="mb-0 small fw-bold"><?php echo $data['ville']['nom']; ?> - <?php echo $data['ville']['region_nom']; ?></h5>
     </div>

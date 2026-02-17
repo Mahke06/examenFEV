@@ -1,7 +1,6 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <style>
-    /* Force la structure rigide pour éviter les décalages */
     .table-simple {
         table-layout: fixed;
         width: 100%;
@@ -18,13 +17,11 @@
         border: 1px solid #dee2e6;
     }
 
-    /* Largeurs de colonnes pour les petits tableaux du haut */
     .col-id { width: 50px; }
     .col-type { width: 30%; }
     .col-cat { width: 25%; }
     .col-qte { width: 30%; }
 
-    /* Largeurs pour le grand tableau de simulation */
     .col-sim-id { width: 45px; }
     .col-sim-type { width: 15%; }
     .col-sim-ville { width: 20%; }
@@ -39,11 +36,11 @@
 </div>
 
 <?php if (isset($_GET['success'])): ?>
-    <div class="alert alert-success py-2"><strong>✅ Succès !</strong> <?php echo htmlspecialchars($_GET['success']); ?></div>
+    <div class="alert alert-success py-2"><strong>✅ Succès !</strong> <?php echo $_GET['success']; ?></div>
 <?php endif; ?>
 
 <?php if (isset($_GET['error'])): ?>
-    <div class="alert alert-danger py-2"><strong>⚠️ Erreur !</strong> <?php echo htmlspecialchars($_GET['error']); ?></div>
+    <div class="alert alert-danger py-2"><strong>⚠️ Erreur !</strong> <?php echo $_GET['error']; ?></div>
 <?php endif; ?>
 
 <div class="row mb-4 g-3">

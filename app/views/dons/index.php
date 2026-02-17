@@ -1,7 +1,6 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <style>
-    /* Force la structure du tableau pour éviter les décalages */
     .table-simple {
         table-layout: fixed;
         width: 100%;
@@ -13,12 +12,11 @@
         padding: 8px;
         font-size: 0.85rem;
         overflow: hidden;
-        text-overflow: ellipsis; /* Ajoute "..." si le texte dépasse */
-        white-space: nowrap;     /* Empêche le retour à la ligne */
+        text-overflow: ellipsis;
+        white-space: nowrap;
         border: 1px solid #dee2e6;
     }
 
-    /* Définition des largeurs de colonnes */
     .w-type { width: 15%; }
     .w-cat { width: 15%; }
     .w-qte { width: 12%; }
@@ -26,7 +24,6 @@
     .w-date { width: 18%; }
     .w-action { width: 100px; }
 
-    /* Styles pour les statuts */
     .badge-simple {
         padding: 2px 6px;
         font-weight: bold;
@@ -56,15 +53,15 @@
         <tbody>
             <?php foreach($dons as $don): ?>
             <tr>
-                <td title="<?php echo htmlspecialchars($don['type_besoin_nom']); ?>">
-                    <b><?php echo !empty($don['type_besoin_nom']) ? htmlspecialchars($don['type_besoin_nom']) : 'N/A'; ?></b>
+                <td title="<?php echo $don['type_besoin_nom']; ?>">
+                    <b><?php echo !empty($don['type_besoin_nom']) ? $don['type_besoin_nom'] : 'N/A'; ?></b>
                 </td>
-                <td><?php echo htmlspecialchars($don['categorie_nom']); ?></td>
+                <td><?php echo $don['categorie_nom']; ?></td>
                 <td><?php echo $don['quantite'] . ' ' . $don['unite']; ?></td>
                 <td>
                     <?php 
                     $reste = $don['quantite_restante'];
-                    $color = $reste == 0 ? "gray" : "#198754"; // Gris si épuisé, vert si disponible
+                    $color = $reste == 0 ? "gray" : "#198754";
                     echo "<span style='color: $color; font-weight: bold;'>" . $reste . ' ' . $don['unite'] . "</span>"; 
                     ?>
                 </td>
