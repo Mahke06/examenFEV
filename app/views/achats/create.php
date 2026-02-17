@@ -1,5 +1,26 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
+<style>
+    .table-simple {
+        table-layout: fixed;
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+    }
+    
+    .table-simple th, .table-simple td {
+        padding: 8px;
+        font-size: 0.85rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .w-15 { width: 15%; }
+    .w-10 { width: 10%; }
+    .w-action { width: 80px; }
+</style>
+
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
     <h1>🛒 Nouvel achat</h1>
     <a href="/achats" class="btn btn-secondary">← Retour à la liste</a>
@@ -74,8 +95,8 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table table-striped table-bordered table-hover align-middle" id="tableBesoins">
-                <thead class="table-dark">
+            <table border="1" class="table-simple">
+                <thead style="background-color: #f8f9fa;">
                     <tr>
                         <th class="text-nowrap">Ville</th>
                         <th class="text-nowrap">Type</th>

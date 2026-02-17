@@ -118,7 +118,6 @@ $router->group('', function(Router $router) use ($app) {
 		$controller->delete();
 	});
 
-	// --- Simulation ---
 	$router->get('/simulation', function() {
 		$controller = new SimulationController();
 		$controller->index();
@@ -134,7 +133,6 @@ $router->group('', function(Router $router) use ($app) {
 		$controller->valider();
 	});
 
-	// --- Récapitulation ---
 	$router->get('/recapitulation', function() {
 		$controller = new RecapitulationController();
 		$controller->index();

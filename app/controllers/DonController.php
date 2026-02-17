@@ -265,10 +265,10 @@ class DonController {
             }
         }
         
-        // Distribuer le reste (dû aux arrondis floor) au besoin avec le plus grand besoin restant
+    
         $reste = $quantite_don - $quantite_distribuee_totale;
         if($reste > 0 && !empty($attributions_prevues)) {
-            // Trier par besoin restant décroissant pour donner le reste aux plus gros besoins
+    
             usort($attributions_prevues, function($a, $b) {
                 return $b['besoin_restant'] - $a['besoin_restant'];
             });
@@ -282,7 +282,7 @@ class DonController {
             unset($attr);
         }
         
-        // Appliquer les attributions
+    
         $quantite_reellement_distribuee = 0;
         foreach($attributions_prevues as $attr) {
             if($attr['quantite'] <= 0) continue;
