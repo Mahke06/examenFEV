@@ -55,9 +55,7 @@ class Besoin {
         return $stmt;
     }
 
-    /**
-     * Retourne les besoins non satisfaits pour un type, triés par quantité demandée croissante (plus petit en premier)
-     */
+    
     public function getBesoinsNonSatisfaitsParPlusPetit($type_besoin_id) {
         $query = "SELECT * FROM " . $this->table . " 
                   WHERE type_besoin_id = ? 

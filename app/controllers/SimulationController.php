@@ -39,9 +39,6 @@ class SimulationController {
         $this->attribution = new Attribution($this->db);
     }
 
-    /**
-     * Page principale de simulation
-     */
     public function index() {
         // Dons disponibles (quantite_restante > 0)
         $dons_disponibles = $this->getDonsDisponibles();
@@ -52,9 +49,7 @@ class SimulationController {
         require_once __DIR__ . '/../views/simulation/index.php';
     }
 
-    /**
-     * Simuler la distribution — aperçu sans enregistrer
-     */
+
     public function simuler() {
         $dons_disponibles = $this->getDonsDisponibles();
         $besoins_non_satisfaits = $this->getBesoinsNonSatisfaits();
@@ -65,9 +60,6 @@ class SimulationController {
         require_once __DIR__ . '/../views/simulation/index.php';
     }
 
-    /**
-     * Valider et exécuter la distribution réelle
-     */
     public function valider() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header("Location: /simulation");
@@ -124,10 +116,6 @@ class SimulationController {
         }
     }
 
-    /**
-     * Algorithme de distribution : pour chaque don disponible, distribue aux besoins du même type
-     * Retourne un tableau de simulation sans modifier la BDD
-     */
     private function calculerDistribution($dons, $besoins) {
         $attributions = [];
         $dons_apres = [];
@@ -193,9 +181,7 @@ class SimulationController {
         ];
     }
 
-    /**
-     * Récupère tous les dons avec quantite_restante > 0
-     */
+
     private function getDonsDisponibles() {
         $query = "SELECT d.*, tb.nom as type_besoin_nom, tb.unite, cb.nom as categorie_nom
                   FROM bngrc_don d
@@ -208,9 +194,7 @@ class SimulationController {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Récupère tous les besoins non entièrement satisfaits
-     */
+   
     private function getBesoinsNonSatisfaits() {
         $query = "SELECT b.*, v.nom as ville_nom, tb.nom as type_besoin_nom,
                   tb.prix_unitaire, tb.unite, cb.nom as categorie_nom

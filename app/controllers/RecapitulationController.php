@@ -24,26 +24,19 @@ class RecapitulationController {
         }
     }
 
-    /**
-     * Page principale récapitulation
-     */
     public function index() {
         $data = $this->getRecapData();
         require_once __DIR__ . '/../views/recapitulation/index.php';
     }
 
-    /**
-     * Endpoint JSON pour actualisation Ajax
-     */
+    
     public function api() {
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($this->getRecapData());
         exit();
     }
 
-    /**
-     * Calcule toutes les données de récapitulation
-     */
+    
     private function getRecapData() {
         // Besoins totaux en montant : Σ(quantite_demandee × prix_unitaire)
         $stmt = $this->db->prepare("
@@ -62,14 +55,11 @@ class RecapitulationController {
         ");
         $stmt->execute();
         $besoins_satisfaits = (float) $stmt->fetch(PDO::FETCH_ASSOC)['montant'];
-
-        // Besoins restants = totaux - satisfaits
+    
         $besoins_restants = $besoins_totaux - $besoins_satisfaits;
-
-        // Pourcentage de satisfaction
+    
         $pourcentage = $besoins_totaux > 0 ? round(($besoins_satisfaits / $besoins_totaux) * 100, 1) : 0;
 
-        // Total dons reçus en montant
         $stmt = $this->db->prepare("
             SELECT COALESCE(SUM(d.quantite * tb.prix_unitaire), 0) as montant
             FROM bngrc_don d
@@ -78,7 +68,7 @@ class RecapitulationController {
         $stmt->execute();
         $dons_totaux = (float) $stmt->fetch(PDO::FETCH_ASSOC)['montant'];
 
-        // Total achats effectués
+    
         $stmt = $this->db->prepare("
             SELECT COALESCE(SUM(montant_total), 0) as montant
             FROM bngrc_achat

@@ -60,9 +60,7 @@ class Don {
         return $stmt->execute();
     }
 
-    /**
-     * Retourne les dons en argent (catégorie 3) avec quantité restante > 0
-     */
+  
     public function getDonsArgentDisponibles() {
         $query = "SELECT d.*, tb.nom as type_besoin_nom, tb.unite, cb.nom as categorie_nom
                   FROM " . $this->table . " d
@@ -75,9 +73,6 @@ class Don {
         return $stmt;
     }
 
-    /**
-     * Retourne le solde total disponible en argent
-     */
     public function getSoldeArgentDisponible() {
         $query = "SELECT COALESCE(SUM(d.quantite_restante * tb.prix_unitaire), 0) as solde
                   FROM " . $this->table . " d
@@ -103,9 +98,7 @@ class Don {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Supprime un don par son ID
-     */
+    
     public function delete($id) {
         $query = "DELETE FROM " . $this->table . " WHERE id = ?";
         $stmt = $this->conn->prepare($query);
@@ -113,9 +106,6 @@ class Don {
         return $stmt->execute();
     }
 
-    /**
-     * Restaure la quantité restante d'un don (ajout)
-     */
     public function restoreQuantiteRestante($don_id, $quantite) {
         $query = "UPDATE " . $this->table . " 
                   SET quantite_restante = quantite_restante + ? 

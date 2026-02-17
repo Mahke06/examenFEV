@@ -7,16 +7,12 @@
         <div class="alert alert-info">
             <strong>Information:</strong> Le don sera distribué <strong>proportionnellement</strong> entre toutes les villes ayant des besoins pour ce type.
             <br><br>
-            <strong>Formule :</strong> <code>distribution = (besoin / besoin_total) × don</code>
-            <br>
-            Le résultat est arrondi à l'entier inférieur (floor), puis le reste est distribué un par un aux villes ayant la <strong>partie décimale la plus haute</strong>.
-            <br><br>
-            <strong>Exemple :</strong> Si un don de 10 est ajouté et que :
+            <strong>Exemple :</strong> Si un don de 300 matelas est ajouté et que :
             <ul class="mb-0 mt-1">
-                <li>Ville A a besoin de 30 (30/70 × 10 = 4.28) → reçoit <strong>4</strong></li>
-                <li>Ville B a besoin de 40 (40/70 × 10 = 5.71) → reçoit <strong>5 + 1 = 6</strong> (décimale la plus haute)</li>
+                <li>Ville A a besoin de 100 matelas (1/3 du total) → reçoit 100</li>
+                <li>Ville B a besoin de 200 matelas (2/3 du total) → reçoit 200</li>
             </ul>
-            Total distribué = 10. Le reste (1) va à la ville avec la décimale la plus haute (0.71 > 0.28).
+            Chaque ville reçoit une part proportionnelle à son besoin restant.
         </div>
 
         <form method="POST" action="/dons/store-proportionnel">

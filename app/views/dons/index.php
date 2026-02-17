@@ -39,8 +39,8 @@
             <button type="submit" class="btn btn-warning">Réinitialiser les données</button>
         </form>
         <a href="/dons/create" class="btn btn-success">Ajouter un don par rapport au date</a>
-        <a href="/dons/create" class="btn btn-success">Ajouter un don par rapport au plus petit</a>
-        <a href="/dons/create" class="btn btn-success">Ajouter un don proportionnel</a>
+        <a href="/dons/create-plus-petit" class="btn btn-success">Ajouter un don par rapport au plus petit</a>
+        <a href="/dons/create-proportionnel" class="btn btn-success">Ajouter un don proportionnel</a>
     </div>
 </div>
 

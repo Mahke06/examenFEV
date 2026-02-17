@@ -58,9 +58,7 @@ class Attribution {
         return $stmt;
     }
 
-    /**
-     * Retourne les attributions liées à un don
-     */
+
     public function getByDonId($don_id) {
         $query = "SELECT * FROM " . $this->table . " WHERE don_id = ?";
         $stmt = $this->conn->prepare($query);
@@ -69,9 +67,7 @@ class Attribution {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Retourne les attributions liées à un besoin
-     */
+    
     public function getByBesoinId($besoin_id) {
         $query = "SELECT * FROM " . $this->table . " WHERE besoin_id = ?";
         $stmt = $this->conn->prepare($query);
@@ -80,9 +76,7 @@ class Attribution {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Supprime toutes les attributions liées à un don
-     */
+    
     public function deleteByDonId($don_id) {
         $query = "DELETE FROM " . $this->table . " WHERE don_id = ?";
         $stmt = $this->conn->prepare($query);
@@ -90,9 +84,7 @@ class Attribution {
         return $stmt->execute();
     }
 
-    /**
-     * Supprime toutes les attributions liées à un besoin
-     */
+    
     public function deleteByBesoinId($besoin_id) {
         $query = "DELETE FROM " . $this->table . " WHERE besoin_id = ?";
         $stmt = $this->conn->prepare($query);

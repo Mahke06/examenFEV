@@ -138,16 +138,14 @@ class AchatController {
         try {
             $this->db->beginTransaction();
 
-            // 4. CRUCIAL : C'EST ICI QUE LE SOLDE DIMINUE
             $montant_a_deduire = $montant_total;
             
-            // On prend un ID de don par défaut pour l'enregistrement de l'achat
             $don_argent_id_principal = $dons_argent[0]['id']; 
 
             foreach ($dons_argent as $don) {
                 if ($montant_a_deduire <= 0) break;
 
-                // On prend soit tout ce qui reste dans ce don, soit juste ce qu'il nous faut
+                // On prend soit tout ce qui reste dans ce don, soit juste ce qu'il nou
                 $deduction = min($montant_a_deduire, $don['quantite_restante']);
                 
                 // >>> LA REQUÊTE QUI MET À JOUR LE SOLDE <<<
@@ -162,7 +160,7 @@ class AchatController {
                 $montant_a_deduire -= $deduction;
             }
 
-            // 5. Enregistrement de l'achat
+    
             $this->achat->besoin_id = $besoin_id;
             $this->achat->ville_id = $besoin['ville_id'];
             $this->achat->type_besoin_id = $besoin['type_besoin_id'];
@@ -174,7 +172,6 @@ class AchatController {
             
             $this->achat->create();
 
-            // 6. Mise à jour du besoin (satisfait)
             $this->besoin->updateQuantiteSatisfaite($besoin_id, $quantite);
 
             $this->db->commit();
@@ -188,82 +185,51 @@ class AchatController {
             exit();
         }
     }
-    /**
-     * Supprime un achat et restaure le besoin + le don en argent
-     */
+   
+
     public function delete() {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: /achats");
-            exit();
-        }
-
-        $achat_id = (int)$_POST['id'];
-        $achat_data = $this->achat->getById($achat_id);
-
-        if (!$achat_data) {
-            header("Location: /achats?error=" . urlencode("Achat introuvable."));
-            exit();
-        }
-
-       try {
-            $this->db->beginTransaction();
-
-            // 4. Déduction du solde
-            $montant_a_deduire = $montant_total;
-            
-            // On prend le premier don par défaut pour l'ID (clé étrangère)
-            $don_argent_id_principal = $dons_argent[0]['id']; 
-
-            foreach ($dons_argent as $don) {
-                if ($montant_a_deduire <= 0) break;
-
-                // Calcul de la déduction sur ce don précis
-                $deduction = min($montant_a_deduire, $don['quantite_restante']);
-                
-                // Calcul du nouveau statut en PHP
-                $reste_apres_deduction = $don['quantite_restante'] - $deduction;
-                $nouveau_statut = ($reste_apres_deduction <= 0) ? 'épuisé' : 'partiellement utilisé';
-
-                // >>> CORRECTION : ON MET TOUT À JOUR EN UNE SEULE FOIS <<<
-                // On met à jour la quantité ET le statut dans la même requête
-                $sql = "UPDATE bngrc_don 
-                        SET quantite_restante = quantite_restante - ?, 
-                            statut = ? 
-                        WHERE id = ?";
-                
-                $stmt = $this->db->prepare($sql);
-                $stmt->execute([$deduction, $nouveau_statut, $don['id']]);
-
-                // On n'appelle plus updateStatut() ici car c'est déjà fait
-                
-                $montant_a_deduire -= $deduction;
-            }
-
-            // 5. Enregistrement de l'achat
-            $this->achat->besoin_id = $besoin_id;
-            $this->achat->ville_id = $besoin['ville_id'];
-            $this->achat->type_besoin_id = $besoin['type_besoin_id'];
-            $this->achat->quantite = $quantite;
-            $this->achat->prix_unitaire = $prix_unitaire;
-            $this->achat->frais_pourcent = $this->frais_achat;
-            $this->achat->montant_total = $montant_total;
-            $this->achat->don_argent_id = $don_argent_id_principal;
-            
-            $this->achat->create();
-
-            // 6. Mise à jour du besoin (satisfait)
-            $this->besoin->updateQuantiteSatisfaite($besoin_id, $quantite);
-
-            $this->db->commit();
-
-            Flight::redirect('/achats?success=' . urlencode("Achat effectué ! Solde mis à jour."));
-            exit();
-
-        } catch (Exception $e) {
-            $this->db->rollBack();
-            Flight::redirect('/achats/create?error=' . urlencode("Erreur technique : " . $e->getMessage()));
-            exit();
-        }
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header("Location: /achats");
+        exit();
     }
+
+    $achat_id = (int)$_POST['id'];
+    $achat_data = $this->achat->getById($achat_id);
+
+    if (!$achat_data) {
+        header("Location: /achats?error=" . urlencode("Achat introuvable."));
+        exit();
+    }
+
+    try {
+        $this->db->beginTransaction();
+
+        $montant_total = $achat_data['montant_total'];
+        $don_argent_id = $achat_data['don_argent_id'];
+        $besoin_id = $achat_data['besoin_id'];
+        $quantite = $achat_data['quantite'];
+
+        $stmt = $this->db->prepare("UPDATE bngrc_don 
+                                    SET quantite_restante = quantite_restante + ?,
+                                        statut = 'disponible'
+                                    WHERE id = ?");
+        $stmt->execute([$montant_total, $don_argent_id]);
+
+        $this->besoin->updateQuantiteSatisfaite($besoin_id, -$quantite);
+
+        $stmt2 = $this->db->prepare("DELETE FROM bngrc_achat WHERE id = ?");
+        $stmt2->execute([$achat_id]);
+
+        $this->db->commit();
+
+        Flight::redirect('/achats?success=' . urlencode("Achat supprimé et solde restauré."));
+        exit();
+
+    } catch (Exception $e) {
+        $this->db->rollBack();
+        Flight::redirect('/achats?error=' . urlencode("Erreur : " . $e->getMessage()));
+        exit();
+    }
+}
 }
 ?>

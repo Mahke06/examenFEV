@@ -1,7 +1,6 @@
 <?php require_once __DIR__ . '/../layout/header.php'; ?>
 
 <style>
-/* ===== Amélioration légère du design ===== */
 
 table {
     width: 100%;
@@ -64,13 +63,13 @@ button.btn-success:hover {
 
 <?php if (isset($_GET['error'])): ?>
     <div class="alert alert-danger py-2">
-        <strong>⚠️ Erreur :</strong> <?= htmlspecialchars($_GET['error']) ?>
+        <strong>⚠️ Erreur :</strong> <?= $_GET['error'] ?>
     </div>
 <?php endif; ?>
 
 <?php if (isset($_GET['success'])): ?>
     <div class="alert alert-success py-2">
-        <strong>✅ Succès :</strong> <?= htmlspecialchars($_GET['success']) ?>
+        <strong>✅ Succès :</strong> <?= $_GET['success'] ?>
     </div>
 <?php endif; ?>
 

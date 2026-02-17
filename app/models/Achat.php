@@ -72,10 +72,7 @@ class Achat {
         return false;
     }
 
-    /**
-     * Vérifie si un type de besoin donné existe encore dans les dons restants (nature/matériaux)
-     * Si oui, on ne doit pas permettre l'achat
-     */
+    
     public function existeDansDonsRestants($type_besoin_id) {
         $query = "SELECT COUNT(*) as nb FROM bngrc_don d
                   WHERE d.type_besoin_id = ? 
@@ -87,9 +84,7 @@ class Achat {
         return $result['nb'] > 0;
     }
 
-    /**
-     * Retourne le total des achats
-     */
+
     public function getTotalAchats() {
         $query = "SELECT COALESCE(SUM(montant_total), 0) as total FROM " . $this->table;
         $stmt = $this->conn->prepare($query);
@@ -98,9 +93,7 @@ class Achat {
         return $result['total'];
     }
 
-    /**
-     * Retourne un achat par son ID
-     */
+   
     public function getById($id) {
         $query = "SELECT a.*, v.nom as ville_nom, tb.nom as type_besoin_nom,
                   tb.unite, tb.prix_unitaire, cb.nom as categorie_nom
@@ -115,9 +108,7 @@ class Achat {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Supprime un achat par son ID
-     */
+    
     public function delete($id) {
         $query = "DELETE FROM " . $this->table . " WHERE id = ?";
         $stmt = $this->conn->prepare($query);
@@ -125,9 +116,7 @@ class Achat {
         return $stmt->execute();
     }
 
-    /**
-     * Retourne les achats liés à un besoin
-     */
+    
     public function getByBesoinId($besoin_id) {
         $query = "SELECT * FROM " . $this->table . " WHERE besoin_id = ?";
         $stmt = $this->conn->prepare($query);

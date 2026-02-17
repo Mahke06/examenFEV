@@ -45,20 +45,6 @@
 <div class="card mb-3 border-0 bg-light">
     <div class="card-body py-2">
         <form method="GET" action="/achats" class="row g-2 align-items-center">
-            <div class="col-auto small fw-bold">Ville:</div>
-            <div class="col-md-3">
-                <select name="ville_id" class="form-select form-select-sm">
-                    <option value="">— Toutes —</option>
-                    <?php foreach ($villes as $ville): ?>
-                        <option value="<?php echo $ville['id']; ?>" <?php echo (isset($_GET['ville_id']) && $_GET['ville_id'] == $ville['id']) ? 'selected' : ''; ?>>
-                            <?php echo $ville['nom']; ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-sm btn-primary">Filtrer</button>
-            </div>
             <div class="col text-end">
                 <span class="badge-simple bg-info text-white">Frais: <?php echo $frais_achat; ?>%</span>
             </div>
