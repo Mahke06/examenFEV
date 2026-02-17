@@ -1,94 +1,181 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const formAchat = document.getElementById('formAchat');
+    
+    // Éléments du DOM
+    const buyButtons = document.querySelectorAll('.btn-acheter');
+    const formSection = document.getElementById('formAchat');
+    const displayVille = document.getElementById('display_ville');
+    const displayType = document.getElementById('display_type');
+    const displayPrix = document.getElementById('display_prix');
+    const displayFrais = document.getElementById('display_frais');
+    const inputBesoinId = document.getElementById('input_besoin_id');
+    const inputQuantite = document.getElementById('input_quantite');
+    const infoMax = document.getElementById('info_max');
     const btnAnnuler = document.getElementById('btnAnnuler');
-    const inputQte = document.getElementById('input_quantite');
+    const achatForm = document.getElementById('achatForm');
 
-    let currentPrix = 0;
-    let currentFrais = 0;
-    let currentMax = 0;
+    // Variables globales pour le calcul courant
+    let currentPrixUnitaire = 0;
+    let currentFraisPourcent = 0;
+    let maxQuantite = 0;
 
-    // Clic sur "Acheter"
-    document.querySelectorAll('.btn-acheter').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            const besoinId = this.dataset.besoinId;
-            const ville = this.dataset.ville;
-            const type = this.dataset.type;
-            const unite = this.dataset.unite;
-            const prix = parseFloat(this.dataset.prix);
-            const max = parseFloat(this.dataset.max);
-            const frais = parseFloat(this.dataset.frais);
+    // --- 1. Gestion du clic sur les boutons "Acheter" ---
+    buyButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Récupération des données
+            const besoinId = this.getAttribute('data-besoin-id');
+            const ville = this.getAttribute('data-ville');
+            const type = this.getAttribute('data-type');
+            const unite = this.getAttribute('data-unite');
+            const prix = parseFloat(this.getAttribute('data-prix'));
+            const max = parseFloat(this.getAttribute('data-max'));
+            const frais = parseFloat(this.getAttribute('data-frais'));
 
-            currentPrix = prix;
-            currentFrais = frais;
-            currentMax = max;
+            // Mise à jour des variables
+            currentPrixUnitaire = prix;
+            currentFraisPourcent = frais;
+            maxQuantite = max;
 
-            document.getElementById('input_besoin_id').value = besoinId;
-            document.getElementById('display_ville').value = ville;
-            document.getElementById('display_type').value = type + ' (' + unite + ')';
-            document.getElementById('display_prix').value = prix.toLocaleString('fr-FR') + ' Ar/' + unite;
-            document.getElementById('display_frais').value = frais + '%';
-            document.getElementById('info_max').textContent = 'Maximum : ' + max + ' ' + unite;
+            // Remplissage du formulaire visuel
+            displayVille.value = ville;
+            displayType.value = type;
+            displayPrix.value = new Intl.NumberFormat('fr-FR').format(prix) + ' Ar / ' + unite;
+            displayFrais.value = frais + ' %';
+            
+            // Input caché et quantité
+            inputBesoinId.value = besoinId;
+            inputQuantite.value = ''; 
+            inputQuantite.max = max;
+            inputQuantite.placeholder = `Max: ${max}`;
+            infoMax.textContent = `Quantité dispo : ${max} ${unite}`;
+            infoMax.classList.remove('text-danger');
+            inputQuantite.classList.remove('is-invalid');
 
-            inputQte.value = '';
-            inputQte.max = max;
+            // Affichage
+            formSection.style.display = 'block';
+            formSection.scrollIntoView({ behavior: 'smooth' });
             document.getElementById('calcul_resume').style.display = 'none';
-
-            formAchat.style.display = 'block';
-            formAchat.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
     });
 
-    // Calcul dynamique
-    if (inputQte) {
-        inputQte.addEventListener('input', function() {
-            const qte = parseFloat(this.value) || 0;
-            const resume = document.getElementById('calcul_resume');
-
-            if (qte > 0) {
-                const ht = qte * currentPrix;
-                const fraisMontant = ht * (currentFrais / 100);
-                const total = ht + fraisMontant;
-
-                document.getElementById('calc_ht').textContent = ht.toLocaleString('fr-FR') + ' Ar';
-                document.getElementById('calc_frais_pct').textContent = currentFrais;
-                document.getElementById('calc_frais').textContent = '+ ' + fraisMontant.toLocaleString('fr-FR') + ' Ar';
-                document.getElementById('calc_total').textContent = total.toLocaleString('fr-FR') + ' Ar';
-
-                resume.style.display = 'block';
-
-                // Alerte visuelle si dépasse le max
-                if (qte > currentMax) {
-                    this.classList.add('is-invalid');
-                } else {
-                    this.classList.remove('is-invalid');
-                }
-            } else {
-                resume.style.display = 'none';
-            }
-        });
-    }
-
-    // Annuler
-    if (btnAnnuler) {
+    // --- 2. Bouton Annuler ---
+    if(btnAnnuler) {
         btnAnnuler.addEventListener('click', function() {
-            formAchat.style.display = 'none';
+            formSection.style.display = 'none';
+            achatForm.reset();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
 
-    // Filtre par ville sur le tableau des besoins
-    const filtreVille = document.getElementById('filtre_ville');
-    if (filtreVille) {
-        filtreVille.addEventListener('change', function() {
-            const villeChoisie = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#tableBesoins tbody tr');
-            rows.forEach(function(row) {
-                const villeCell = row.querySelector('td:first-child');
-                if (!villeChoisie || villeCell.textContent.trim().toLowerCase() === villeChoisie) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
+    // --- 3. Calculs en direct (Input Quantité) ---
+    inputQuantite.addEventListener('input', function() {
+        const quantite = parseFloat(this.value);
+        const resumeDiv = document.getElementById('calcul_resume');
+        const soldeFeedback = document.getElementById('solde_feedback');
+        const btnConfirmer = document.getElementById('btnConfirmer');
+
+        if (isNaN(quantite) || quantite <= 0) {
+            resumeDiv.style.display = 'none';
+            soldeFeedback.style.display = 'none';
+            return;
+        }
+
+        // Validation max
+        if (quantite > maxQuantite) {
+            this.classList.add('is-invalid');
+            infoMax.classList.add('text-danger');
+            infoMax.textContent = `Erreur : Max ${maxQuantite}`;
+            btnConfirmer.disabled = true;
+        } else {
+            this.classList.remove('is-invalid');
+            infoMax.classList.remove('text-danger');
+            btnConfirmer.disabled = false;
+        }
+
+        // Calculs
+        const sousTotal = quantite * currentPrixUnitaire;
+        const montantFrais = sousTotal * (currentFraisPourcent / 100);
+        const totalTTC = sousTotal + montantFrais;
+
+        // Affichage
+        document.getElementById('calc_ht').textContent = new Intl.NumberFormat('fr-FR').format(sousTotal) + ' Ar';
+        document.getElementById('calc_frais_pct').textContent = currentFraisPourcent;
+        document.getElementById('calc_frais').textContent = new Intl.NumberFormat('fr-FR').format(montantFrais) + ' Ar';
+        document.getElementById('calc_total').textContent = new Intl.NumberFormat('fr-FR').format(totalTTC) + ' Ar';
+        resumeDiv.style.display = 'block';
+
+        // Vérification Solde
+        const soldeDispo = window.SOLDE_ARGENT || 0;
+        soldeFeedback.style.display = 'block';
+        
+        if (totalTTC > soldeDispo) {
+            soldeFeedback.innerHTML = `<div class="alert alert-danger">Manque <b>${new Intl.NumberFormat('fr-FR').format(totalTTC - soldeDispo)} Ar</b></div>`;
+            btnConfirmer.disabled = true;
+        } else {
+            soldeFeedback.innerHTML = `<div class="alert alert-info">Reste après achat: <b>${new Intl.NumberFormat('fr-FR').format(soldeDispo - totalTTC)} Ar</b></div>`;
+            if (quantite <= maxQuantite) btnConfirmer.disabled = false;
+        }
+    });
+
+    // --- 4. SOUMISSION AJAX (Le point clé) ---
+    achatForm.addEventListener('submit', function(e) {
+        e.preventDefault(); // On bloque le rechargement de la page
+
+        const btnConfirmer = document.getElementById('btnConfirmer');
+        const originalText = btnConfirmer.innerHTML;
+        
+        // UI chargement
+        btnConfirmer.disabled = true;
+        btnConfirmer.textContent = "Traitement en cours...";
+
+        const formData = new FormData(this);
+
+        fetch('/achats/store', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 1. Cacher le formulaire
+                formSection.style.display = 'none';
+                achatForm.reset();
+
+                // 2. Mettre à jour le bouton dans le tableau
+                const besoinId = formData.get('besoin_id');
+                const btnAcheter = document.querySelector(`.btn-acheter[data-besoin-id="${besoinId}"]`);
+                
+                if (btnAcheter) {
+                    btnAcheter.classList.remove('btn-primary');
+                    btnAcheter.classList.add('btn-success'); // Vert
+                    btnAcheter.innerHTML = '✅ Achat OK';
+                    btnAcheter.disabled = true; // Désactivé
                 }
-            });
+
+                // 3. Mettre à jour le solde global JS et HTML
+                if (data.nouveau_solde !== undefined) {
+                    window.SOLDE_ARGENT = parseFloat(data.nouveau_solde);
+                    // Mise à jour de l'affichage en haut de page si présent
+                    const soldeDisplay = document.querySelector('.stat-number');
+                    if(soldeDisplay) {
+                        soldeDisplay.textContent = new Intl.NumberFormat('fr-FR').format(window.SOLDE_ARGENT) + ' Ar';
+                    }
+                }
+
+                alert("Succès : " + data.message);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            } else {
+                alert("Erreur : " + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert("Une erreur technique est survenue.");
+        })
+        .finally(() => {
+            // Remettre le bouton normal
+            btnConfirmer.disabled = false;
+            btnConfirmer.innerHTML = originalText;
         });
-    }
+    });
 });

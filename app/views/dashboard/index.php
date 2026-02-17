@@ -84,23 +84,6 @@
     </div>
 </div>
 
-<div class="card mb-4 shadow-sm">
-    <div class="card-body py-2">
-        <div class="row align-items-center">
-            <div class="col-auto"><label class="small fw-bold">Filtrer par ville :</label></div>
-            <div class="col-md-4">
-                <select id="filtre_ville_dashboard" class="form-select form-select-sm">
-                    <option value="">— Toutes les villes —</option>
-                    <?php foreach($dashboard_data as $data): ?>
-                    <option value="<?php echo $data['ville']['nom']; ?>">
-                        <?php echo $data['ville']['nom']; ?>
-                    </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-        </div>
-    </div>
-</div>
 
 <?php foreach($dashboard_data as $data): ?>
 <div class="card ville-card shadow-sm" data-ville="<?php echo $data['ville']['nom']; ?>">

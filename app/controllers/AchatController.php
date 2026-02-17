@@ -81,89 +81,88 @@ class AchatController {
         require_once __DIR__ . '/../views/achats/create.php';
     }
 
-    /**
-     * Traitement de l'achat
+/**
+     * Traitement de l'achat via AJAX
+     */
+   /**
+   
+     * Traitement de l'achat (Version Standard PHP)
      */
     public function store() {
+        // 1. Vérifications de base
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: /achats/create");
+            Flight::redirect('/achats/create');
             exit();
         }
 
         $besoin_id = (int)$_POST['besoin_id'];
         $quantite = (float)$_POST['quantite'];
 
-        // Récupérer les infos du besoin
+        // Récupérer le besoin
         $besoin = $this->besoin->getById($besoin_id);
-
         if (!$besoin) {
-            header("Location: /achats/create?error=" . urlencode("Besoin introuvable."));
+            Flight::redirect('/achats/create?error=' . urlencode('Besoin introuvable.'));
             exit();
         }
 
-        // Vérifier que le besoin est bien en nature ou matériaux (pas argent)
-        if ($besoin['categorie_nom'] === 'en Argent') {
-            header("Location: /achats/create?error=" . urlencode("Impossible d'acheter un besoin en argent."));
-            exit();
-        }
-
-        // Vérifier si ce type de besoin existe encore dans les dons restants (nature/matériaux)
+        // Vérifications stocks et validité
         if ($this->achat->existeDansDonsRestants($besoin['type_besoin_id'])) {
-            header("Location: /achats/create?error=" . urlencode("Ce type d'article (« " . $besoin['type_besoin_nom'] . " ») est encore disponible dans les dons restants. Utilisez d'abord les dons existants avant d'acheter."));
+            Flight::redirect('/achats/create?error=' . urlencode("Cet article est disponible en don. Utilisez le stock avant d'acheter."));
             exit();
         }
 
-        // Vérifier que la quantité ne dépasse pas le besoin restant
         $quantite_restante = $besoin['quantite_demandee'] - $besoin['quantite_satisfaite'];
         if ($quantite > $quantite_restante) {
-            header("Location: /achats/create?error=" . urlencode("Quantité demandée (" . $quantite . ") supérieure au besoin restant (" . $quantite_restante . ")."));
+            Flight::redirect('/achats/create?error=' . urlencode("Quantité trop élevée. Max: $quantite_restante"));
             exit();
         }
 
-        if ($quantite <= 0) {
-            header("Location: /achats/create?error=" . urlencode("La quantité doit être supérieure à 0."));
-            exit();
-        }
-
-        // Calculer le montant avec frais
+        // 2. Calcul du montant total à payer
         $prix_unitaire = $besoin['prix_unitaire'];
         $montant_ht = $quantite * $prix_unitaire;
         $montant_total = $montant_ht * (1 + $this->frais_achat / 100);
 
-        // Chercher un don en argent disponible avec assez de fonds
+        // 3. Vérifier si on a assez d'argent
         $dons_argent = $this->don->getDonsArgentDisponibles()->fetchAll(PDO::FETCH_ASSOC);
         
-        $don_argent_id = null;
-        $montant_restant = $montant_total;
-
-        // On utilise le premier don en argent ayant assez de fonds
-        // (on pourrait répartir sur plusieurs dons, mais on simplifie)
+        $solde_total = 0;
         foreach ($dons_argent as $don) {
-            if ($don['quantite_restante'] >= $montant_total) {
-                $don_argent_id = $don['id'];
-                break;
-            }
+            $solde_total += $don['quantite_restante'];
+        }
+        
+        if ($solde_total < $montant_total) {
+            Flight::redirect('/achats/create?error=' . urlencode("Fonds insuffisants. Manque " . ($montant_total - $solde_total) . " Ar"));
+            exit();
         }
 
-        if ($don_argent_id === null) {
-            // Vérifier si le solde total couvre le montant
-            $solde_total = 0;
-            foreach ($dons_argent as $don) {
-                $solde_total += $don['quantite_restante'];
-            }
-            if ($solde_total < $montant_total) {
-                header("Location: /achats/create?error=" . urlencode("Solde en argent insuffisant. Montant nécessaire : " . number_format($montant_total, 0, ',', ' ') . " Ar. Solde disponible : " . number_format($solde_total, 0, ',', ' ') . " Ar."));
-                exit();
-            }
-            // Prendre le premier don pour commencer
-            $don_argent_id = $dons_argent[0]['id'];
-        }
-
-        // Transaction pour l'achat
         try {
             $this->db->beginTransaction();
 
-            // 1. Créer l'achat
+            // 4. CRUCIAL : C'EST ICI QUE LE SOLDE DIMINUE
+            $montant_a_deduire = $montant_total;
+            
+            // On prend un ID de don par défaut pour l'enregistrement de l'achat
+            $don_argent_id_principal = $dons_argent[0]['id']; 
+
+            foreach ($dons_argent as $don) {
+                if ($montant_a_deduire <= 0) break;
+
+                // On prend soit tout ce qui reste dans ce don, soit juste ce qu'il nous faut
+                $deduction = min($montant_a_deduire, $don['quantite_restante']);
+                
+                // >>> LA REQUÊTE QUI MET À JOUR LE SOLDE <<<
+                $stmt = $this->db->prepare("UPDATE bngrc_don SET quantite_restante = quantite_restante - ? WHERE id = ?");
+                $stmt->execute([$deduction, $don['id']]);
+
+                // Mise à jour du statut (épuisé ou partiel)
+                $nouveau_solde_don = $don['quantite_restante'] - $deduction;
+                $statut = ($nouveau_solde_don <= 0) ? 'épuisé' : 'partiellement utilisé';
+                $this->don->updateStatut($don['id'], $statut);
+
+                $montant_a_deduire -= $deduction;
+            }
+
+            // 5. Enregistrement de l'achat
             $this->achat->besoin_id = $besoin_id;
             $this->achat->ville_id = $besoin['ville_id'];
             $this->achat->type_besoin_id = $besoin['type_besoin_id'];
@@ -171,50 +170,24 @@ class AchatController {
             $this->achat->prix_unitaire = $prix_unitaire;
             $this->achat->frais_pourcent = $this->frais_achat;
             $this->achat->montant_total = $montant_total;
-            $this->achat->don_argent_id = $don_argent_id;
+            $this->achat->don_argent_id = $don_argent_id_principal;
+            
+            $this->achat->create();
 
-            $achat_id = $this->achat->create();
-
-            if (!$achat_id) {
-                throw new Exception("Erreur lors de la création de l'achat.");
-            }
-
-            // 2. Déduire le montant du don en argent
-            // Déduire du/des dons en argent
-            $montant_a_deduire = $montant_total;
-            foreach ($dons_argent as $don) {
-                if ($montant_a_deduire <= 0) break;
-
-                $deduction = min($montant_a_deduire, $don['quantite_restante']);
-                
-                $stmt = $this->db->prepare("UPDATE bngrc_don SET quantite_restante = quantite_restante - ? WHERE id = ?");
-                $stmt->execute([$deduction, $don['id']]);
-
-                // Mettre à jour le statut
-                $nouveau_restant = $don['quantite_restante'] - $deduction;
-                if ($nouveau_restant <= 0) {
-                    $this->don->updateStatut($don['id'], 'épuisé');
-                } else {
-                    $this->don->updateStatut($don['id'], 'partiellement utilisé');
-                }
-
-                $montant_a_deduire -= $deduction;
-            }
-
-            // 3. Mettre à jour la quantité satisfaite du besoin
+            // 6. Mise à jour du besoin (satisfait)
             $this->besoin->updateQuantiteSatisfaite($besoin_id, $quantite);
 
             $this->db->commit();
 
-            header("Location: /achats?success=" . urlencode("Achat effectué avec succès ! Montant total : " . number_format($montant_total, 0, ',', ' ') . " Ar (dont " . $this->frais_achat . "% de frais)."));
+            Flight::redirect('/achats?success=' . urlencode("Achat effectué ! Solde mis à jour."));
             exit();
+
         } catch (Exception $e) {
             $this->db->rollBack();
-            header("Location: /achats/create?error=" . urlencode("Erreur : " . $e->getMessage()));
+            Flight::redirect('/achats/create?error=' . urlencode("Erreur technique : " . $e->getMessage()));
             exit();
         }
     }
-
     /**
      * Supprime un achat et restaure le besoin + le don en argent
      */
@@ -232,33 +205,63 @@ class AchatController {
             exit();
         }
 
-        try {
+       try {
             $this->db->beginTransaction();
 
-            // 1. Restaurer la quantité satisfaite du besoin
-            $this->besoin->reduireQuantiteSatisfaite($achat_data['besoin_id'], $achat_data['quantite']);
+            // 4. Déduction du solde
+            $montant_a_deduire = $montant_total;
+            
+            // On prend le premier don par défaut pour l'ID (clé étrangère)
+            $don_argent_id_principal = $dons_argent[0]['id']; 
 
-            // 2. Restaurer le montant du don en argent
-            $this->don->restoreQuantiteRestante($achat_data['don_argent_id'], $achat_data['montant_total']);
-            $don_data = $this->don->getById($achat_data['don_argent_id']);
-            if ($don_data) {
-                $nouveau_restant = $don_data['quantite_restante'] + $achat_data['montant_total'];
-                if ($nouveau_restant >= $don_data['quantite']) {
-                    $this->don->updateStatut($achat_data['don_argent_id'], 'non distribué');
-                } else {
-                    $this->don->updateStatut($achat_data['don_argent_id'], 'partiellement utilisé');
-                }
+            foreach ($dons_argent as $don) {
+                if ($montant_a_deduire <= 0) break;
+
+                // Calcul de la déduction sur ce don précis
+                $deduction = min($montant_a_deduire, $don['quantite_restante']);
+                
+                // Calcul du nouveau statut en PHP
+                $reste_apres_deduction = $don['quantite_restante'] - $deduction;
+                $nouveau_statut = ($reste_apres_deduction <= 0) ? 'épuisé' : 'partiellement utilisé';
+
+                // >>> CORRECTION : ON MET TOUT À JOUR EN UNE SEULE FOIS <<<
+                // On met à jour la quantité ET le statut dans la même requête
+                $sql = "UPDATE bngrc_don 
+                        SET quantite_restante = quantite_restante - ?, 
+                            statut = ? 
+                        WHERE id = ?";
+                
+                $stmt = $this->db->prepare($sql);
+                $stmt->execute([$deduction, $nouveau_statut, $don['id']]);
+
+                // On n'appelle plus updateStatut() ici car c'est déjà fait
+                
+                $montant_a_deduire -= $deduction;
             }
 
-            // 3. Supprimer l'achat
-            $this->achat->delete($achat_id);
+            // 5. Enregistrement de l'achat
+            $this->achat->besoin_id = $besoin_id;
+            $this->achat->ville_id = $besoin['ville_id'];
+            $this->achat->type_besoin_id = $besoin['type_besoin_id'];
+            $this->achat->quantite = $quantite;
+            $this->achat->prix_unitaire = $prix_unitaire;
+            $this->achat->frais_pourcent = $this->frais_achat;
+            $this->achat->montant_total = $montant_total;
+            $this->achat->don_argent_id = $don_argent_id_principal;
+            
+            $this->achat->create();
+
+            // 6. Mise à jour du besoin (satisfait)
+            $this->besoin->updateQuantiteSatisfaite($besoin_id, $quantite);
 
             $this->db->commit();
-            header("Location: /achats?success=" . urlencode("Achat supprimé avec succès."));
+
+            Flight::redirect('/achats?success=' . urlencode("Achat effectué ! Solde mis à jour."));
             exit();
+
         } catch (Exception $e) {
             $this->db->rollBack();
-            header("Location: /achats?error=" . urlencode("Erreur lors de la suppression : " . $e->getMessage()));
+            Flight::redirect('/achats/create?error=' . urlencode("Erreur technique : " . $e->getMessage()));
             exit();
         }
     }

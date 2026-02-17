@@ -192,14 +192,22 @@ class DonController {
     }
 
  
+    /**
+     * Distribution proportionnelle par ville :
+     * Formule : distribution_ville = (besoin_ville / besoin_total) × don
+     * Le résultat est arrondi par floor, puis le reste est distribué
+     * un par un aux villes ayant la partie décimale la plus haute.
+     * Ensuite, la part de chaque ville est répartie entre ses besoins individuels.
+     */
     private function distribuerProportionnellement($don_id) {
         $query = "SELECT * FROM bngrc_don WHERE id = ?";
         $stmt = $this->db->prepare($query);
         $stmt->execute([$don_id]);
         $don = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        $quantite_don = $don['quantite'];
+        $quantite_don = (int)$don['quantite'];
         
+        // Récupérer tous les besoins non satisfaits pour ce type
         $besoins_stmt = $this->besoin->getBesoinsNonSatisfaitsAvecRestant($don['type_besoin_id']);
         $besoins = $besoins_stmt->fetchAll(PDO::FETCH_ASSOC);
         
@@ -208,9 +216,27 @@ class DonController {
             return;
         }
         
-        $total_besoin_restant = 0;
+        // Regrouper les besoins par ville
+        $besoins_par_ville = [];
         foreach($besoins as $besoin_item) {
-            $total_besoin_restant += (int)$besoin_item['quantite_restante'];
+            $ville_id = (int)$besoin_item['ville_id'];
+            if(!isset($besoins_par_ville[$ville_id])) {
+                $besoins_par_ville[$ville_id] = [
+                    'ville_id' => $ville_id,
+                    'ville_nom' => $besoin_item['ville_nom'],
+                    'total_restant' => 0,
+                    'besoins' => []
+                ];
+            }
+            $besoin_restant = (int)$besoin_item['quantite_restante'];
+            $besoins_par_ville[$ville_id]['total_restant'] += $besoin_restant;
+            $besoins_par_ville[$ville_id]['besoins'][] = $besoin_item;
+        }
+        
+        // Calculer le total global des besoins restants
+        $total_besoin_restant = 0;
+        foreach($besoins_par_ville as $ville_data) {
+            $total_besoin_restant += $ville_data['total_restant'];
         }
         
         if($total_besoin_restant <= 0) {
@@ -218,6 +244,7 @@ class DonController {
             return;
         }
         
+        // Si le don couvre tous les besoins, distribuer tout
         if($quantite_don >= $total_besoin_restant) {
             $quantite_distribuee = 0;
             foreach($besoins as $besoin_item) {
@@ -243,58 +270,83 @@ class DonController {
             return;
         }
         
+        // === Distribution proportionnelle par ville ===
+        // Étape 1 : Calculer la part de chaque ville avec floor + partie décimale
+        $parts_par_ville = [];
         $quantite_distribuee_totale = 0;
-        $attributions_prevues = [];
         
-        foreach($besoins as $besoin_item) {
-            $besoin_restant = (int)$besoin_item['quantite_restante'];
-            // Proportion = besoin_restant / total * quantite_don
-            $part_proportionnelle = floor(($besoin_restant / $total_besoin_restant) * $quantite_don);
+        foreach($besoins_par_ville as $ville_id => $ville_data) {
+            // Formule : (besoin_ville / besoin_total) × don
+            $part_exacte = ($ville_data['total_restant'] / $total_besoin_restant) * $quantite_don;
+            $part_entiere = (int)floor($part_exacte);
+            $partie_decimale = $part_exacte - $part_entiere;
             
-            // Ne pas dépasser le besoin restant
-            $quantite_a_attribuer = min($part_proportionnelle, $besoin_restant);
+            // Ne pas dépasser le besoin restant de la ville
+            $part_entiere = min($part_entiere, $ville_data['total_restant']);
             
-            if($quantite_a_attribuer > 0) {
-                $attributions_prevues[] = [
-                    'besoin_id' => $besoin_item['id'],
-                    'ville_id' => $besoin_item['ville_id'],
-                    'quantite' => $quantite_a_attribuer,
-                    'besoin_restant' => $besoin_restant
-                ];
-                $quantite_distribuee_totale += $quantite_a_attribuer;
-            }
+            $parts_par_ville[$ville_id] = [
+                'ville_id' => $ville_id,
+                'quantite' => $part_entiere,
+                'besoin_restant_ville' => $ville_data['total_restant'],
+                'partie_decimale' => $partie_decimale,
+                'besoins' => $ville_data['besoins']
+            ];
+            $quantite_distribuee_totale += $part_entiere;
         }
         
-    
+        // Étape 2 : Distribuer le reste aux villes avec la décimale la plus haute
         $reste = $quantite_don - $quantite_distribuee_totale;
-        if($reste > 0 && !empty($attributions_prevues)) {
-    
-            usort($attributions_prevues, function($a, $b) {
-                return $b['besoin_restant'] - $a['besoin_restant'];
+        
+        if($reste > 0) {
+            // Trier par partie décimale décroissante
+            uasort($parts_par_ville, function($a, $b) {
+                $cmp = $b['partie_decimale'] <=> $a['partie_decimale'];
+                if($cmp !== 0) {
+                    return $cmp;
+                }
+                // En cas d'égalité, la ville avec le plus grand besoin en premier
+                return $b['besoin_restant_ville'] <=> $a['besoin_restant_ville'];
             });
             
-            foreach($attributions_prevues as &$attr) {
+            foreach($parts_par_ville as &$part_ville) {
                 if($reste <= 0) break;
-                $peut_ajouter = min($reste, $attr['besoin_restant'] - $attr['quantite']);
-                $attr['quantite'] += $peut_ajouter;
-                $reste -= $peut_ajouter;
+                if($part_ville['quantite'] < $part_ville['besoin_restant_ville']) {
+                    $part_ville['quantite'] += 1;
+                    $quantite_distribuee_totale += 1;
+                    $reste -= 1;
+                }
             }
-            unset($attr);
+            unset($part_ville);
         }
         
-    
+        // Étape 3 : Pour chaque ville, répartir sa part entre ses besoins individuels
         $quantite_reellement_distribuee = 0;
-        foreach($attributions_prevues as $attr) {
-            if($attr['quantite'] <= 0) continue;
+        
+        foreach($parts_par_ville as $part_ville) {
+            $quantite_ville = $part_ville['quantite'];
+            if($quantite_ville <= 0) continue;
             
-            $this->attribution->don_id = $don_id;
-            $this->attribution->besoin_id = $attr['besoin_id'];
-            $this->attribution->ville_id = $attr['ville_id'];
-            $this->attribution->quantite_attribuee = $attr['quantite'];
-            $this->attribution->create();
+            $restant_a_distribuer = $quantite_ville;
             
-            $this->besoin->updateQuantiteSatisfaite($attr['besoin_id'], $attr['quantite']);
-            $quantite_reellement_distribuee += $attr['quantite'];
+            foreach($part_ville['besoins'] as $besoin_item) {
+                if($restant_a_distribuer <= 0) break;
+                
+                $besoin_restant = (int)$besoin_item['quantite_restante'];
+                $quantite_a_attribuer = min($restant_a_distribuer, $besoin_restant);
+                
+                if($quantite_a_attribuer <= 0) continue;
+                
+                $this->attribution->don_id = $don_id;
+                $this->attribution->besoin_id = $besoin_item['id'];
+                $this->attribution->ville_id = $besoin_item['ville_id'];
+                $this->attribution->quantite_attribuee = $quantite_a_attribuer;
+                $this->attribution->create();
+                
+                $this->besoin->updateQuantiteSatisfaite($besoin_item['id'], $quantite_a_attribuer);
+                
+                $restant_a_distribuer -= $quantite_a_attribuer;
+                $quantite_reellement_distribuee += $quantite_a_attribuer;
+            }
         }
         
         $this->don->updateQuantiteRestante($don_id, $quantite_reellement_distribuee);
