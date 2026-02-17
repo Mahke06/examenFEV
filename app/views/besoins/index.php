@@ -23,7 +23,12 @@
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
     <h1>Liste des besoins</h1>
-    <a href="/besoins/create" class="btn btn-primary">Ajouter un besoin</a>
+    <div class="d-flex gap-2">
+        <form method="POST" action="/besoins/reinitialiser" onsubmit="return confirm('Êtes-vous sûr de vouloir réinitialiser toutes les données ? Tous les dons, attributions, achats et besoins seront supprimés et les besoins initiaux seront restaurés.');">
+            <button type="submit" class="btn btn-warning">Réinitialiser les données</button>
+        </form>
+        <a href="/besoins/create" class="btn btn-primary">Ajouter un besoin</a>
+    </div>
 </div>
 
 <div class="table-responsive">

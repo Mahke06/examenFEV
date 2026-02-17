@@ -60,9 +60,6 @@ class BesoinController {
         }
     }
 
-    /**
-     * Supprime un besoin et annule ses attributions et achats liés
-     */
     public function delete() {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header("Location: /besoins");
@@ -71,7 +68,7 @@ class BesoinController {
 
         $besoin_id = (int)$_POST['id'];
 
-        // Charger les modèles nécessaires
+        
         require_once __DIR__ . '/../models/Attribution.php';
         require_once __DIR__ . '/../models/Don.php';
         require_once __DIR__ . '/../models/Achat.php';
@@ -82,12 +79,9 @@ class BesoinController {
         try {
             $this->db->beginTransaction();
 
-            // 1. Récupérer et annuler les attributions liées à ce besoin
             $attributions = $attribution->getByBesoinId($besoin_id);
             foreach ($attributions as $attr) {
-                // Restaurer la quantité restante du don
                 $don->restoreQuantiteRestante($attr['don_id'], $attr['quantite_attribuee']);
-                // Remettre le statut du don
                 $don_data = $don->getById($attr['don_id']);
                 if ($don_data) {
                     if ($don_data['quantite_restante'] + $attr['quantite_attribuee'] >= $don_data['quantite']) {
@@ -99,10 +93,10 @@ class BesoinController {
             }
             $attribution->deleteByBesoinId($besoin_id);
 
-            // 2. Récupérer et annuler les achats liés à ce besoin
+        
             $achats = $achat->getByBesoinId($besoin_id);
             foreach ($achats as $a) {
-                // Restaurer le montant du don en argent
+            
                 $don->restoreQuantiteRestante($a['don_argent_id'], $a['montant_total']);
                 $don_data = $don->getById($a['don_argent_id']);
                 if ($don_data && ($don_data['quantite_restante'] + $a['montant_total']) >= $don_data['quantite']) {
@@ -113,7 +107,7 @@ class BesoinController {
                 $achat->delete($a['id']);
             }
 
-            // 3. Supprimer le besoin
+        
             $this->besoin->delete($besoin_id);
 
             $this->db->commit();
@@ -122,6 +116,65 @@ class BesoinController {
         } catch (Exception $e) {
             $this->db->rollBack();
             die("Erreur lors de la suppression du besoin : " . $e->getMessage());
+        }
+    }
+
+    
+    public function reinitialiser() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header("Location: /besoins");
+            exit();
+        }
+
+        require_once __DIR__ . '/../models/Attribution.php';
+        require_once __DIR__ . '/../models/Don.php';
+        require_once __DIR__ . '/../models/Achat.php';
+
+        try {
+            $this->db->beginTransaction();
+            $this->db->exec("DELETE FROM bngrc_achat");
+            $this->db->exec("DELETE FROM bngrc_attribution");
+            $this->db->exec("DELETE FROM bngrc_don");
+            $this->db->exec("DELETE FROM bngrc_besoin");
+            $query = "INSERT INTO bngrc_besoin (ville_id, type_besoin_id, quantite_demandee, date_saisie) VALUES
+                (1, 1, 1000, '2026-02-10 08:00:00'),
+                (1, 2, 200, '2026-02-10 08:15:00'),
+                (1, 11, 500, '2026-02-10 08:30:00'),
+                (2, 1, 500, '2026-02-10 10:00:00'),
+                (2, 5, 20, '2026-02-10 10:30:00'),
+                (2, 6, 30, '2026-02-10 11:00:00'),
+                (3, 1, 800, '2026-02-11 09:00:00'),
+                (3, 3, 300, '2026-02-11 09:30:00'),
+                (3, 7, 15, '2026-02-11 10:00:00'),
+                (4, 1, 600, '2026-02-11 14:00:00'),
+                (4, 4, 100, '2026-02-11 14:30:00'),
+                (5, 10, 50, '2026-02-12 08:00:00'),
+                (5, 1, 400, '2026-02-12 08:30:00'),
+                (6, 11, 1000, '2026-02-12 10:00:00'),
+                (6, 1, 700, '2026-02-12 10:30:00'),
+                (7, 12, 40, '2026-02-13 09:00:00'),
+                (7, 5, 25, '2026-02-13 09:30:00'),
+                (8, 1, 900, '2026-02-13 11:00:00'),
+                (8, 8, 50, '2026-02-13 11:30:00'),
+                (9, 1, 350, '2026-02-14 08:00:00'),
+                (9, 2, 150, '2026-02-14 08:30:00'),
+                (10, 1, 1200, '2026-02-14 10:00:00'),
+                (10, 3, 400, '2026-02-14 10:30:00'),
+                (10, 6, 50, '2026-02-14 11:00:00'),
+                (1, 5, 30, '2026-02-15 08:00:00'),
+                (2, 7, 10, '2026-02-15 09:00:00'),
+                (3, 6, 40, '2026-02-15 10:00:00'),
+                (4, 8, 60, '2026-02-15 11:00:00'),
+                (5, 1, 250, '2026-02-15 13:00:00'),
+                (6, 2, 180, '2026-02-15 14:00:00')";
+            $this->db->exec($query);
+
+            $this->db->commit();
+            header("Location: /besoins");
+            exit();
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            die("Erreur lors de la réinitialisation : " . $e->getMessage());
         }
     }
 }

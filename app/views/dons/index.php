@@ -34,7 +34,14 @@
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
     <h1>Liste des dons</h1>
-    <a href="/dons/create" class="btn btn-success">Ajouter un don</a>
+    <div class="d-flex gap-2">
+        <form method="POST" action="/besoins/reinitialiser" onsubmit="return confirm('Êtes-vous sûr de vouloir réinitialiser toutes les données ? Tous les dons, attributions, achats et besoins seront supprimés et les besoins initiaux seront restaurés.');">
+            <button type="submit" class="btn btn-warning">Réinitialiser les données</button>
+        </form>
+        <a href="/dons/create" class="btn btn-success">Ajouter un don par rapport au date</a>
+        <a href="/dons/create-plus-petit" class="btn btn-success">Ajouter un don par rapport au plus petit</a>
+        <a href="/dons/create-proportionnel" class="btn btn-success">Ajouter un don proportionnel</a>
+    </div>
 </div>
 
 <div class="table-responsive">

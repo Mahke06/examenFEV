@@ -55,6 +55,34 @@ class Besoin {
         return $stmt;
     }
 
+    /**
+     * Retourne les besoins non satisfaits pour un type, triés par quantité demandée croissante (plus petit en premier)
+     */
+    public function getBesoinsNonSatisfaitsParPlusPetit($type_besoin_id) {
+        $query = "SELECT * FROM " . $this->table . " 
+                  WHERE type_besoin_id = ? 
+                  AND quantite_satisfaite < quantite_demandee 
+                  ORDER BY (quantite_demandee - quantite_satisfaite) ASC, date_saisie ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $type_besoin_id);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    public function getBesoinsNonSatisfaitsAvecRestant($type_besoin_id) {
+        $query = "SELECT b.*, v.nom as ville_nom,
+                  (b.quantite_demandee - b.quantite_satisfaite) as quantite_restante
+                  FROM " . $this->table . " b
+                  LEFT JOIN bngrc_ville v ON b.ville_id = v.id
+                  WHERE b.type_besoin_id = ? 
+                  AND b.quantite_satisfaite < b.quantite_demandee 
+                  ORDER BY b.ville_id ASC, b.date_saisie ASC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $type_besoin_id);
+        $stmt->execute();
+        return $stmt;
+    }
+
     public function updateQuantiteSatisfaite($besoin_id, $quantite) {
         $query = "UPDATE " . $this->table . " 
                   SET quantite_satisfaite = quantite_satisfaite + ? 
@@ -65,9 +93,7 @@ class Besoin {
         return $stmt->execute();
     }
 
-    /**
-     * Retourne les besoins restants en nature (cat 1) et matériaux (cat 2) non satisfaits
-     */
+   
     public function getBesoinsRestantsNonArgent() {
         $query = "SELECT b.*, v.nom as ville_nom, tb.nom as type_besoin_nom,
                   tb.prix_unitaire, tb.unite, cb.nom as categorie_nom,
@@ -84,9 +110,7 @@ class Besoin {
         return $stmt;
     }
 
-    /**
-     * Retourne un besoin par son ID avec les jointures
-     */
+
     public function getById($besoin_id) {
         $query = "SELECT b.*, v.nom as ville_nom, tb.nom as type_besoin_nom,
                   tb.prix_unitaire, tb.unite, cb.nom as categorie_nom,
@@ -102,9 +126,7 @@ class Besoin {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    /**
-     * Supprime un besoin par son ID
-     */
+    
     public function delete($id) {
         $query = "DELETE FROM " . $this->table . " WHERE id = ?";
         $stmt = $this->conn->prepare($query);
@@ -112,9 +134,7 @@ class Besoin {
         return $stmt->execute();
     }
 
-    /**
-     * Réduit la quantité satisfaite d'un besoin
-     */
+    
     public function reduireQuantiteSatisfaite($besoin_id, $quantite) {
         $query = "UPDATE " . $this->table . " 
                   SET quantite_satisfaite = GREATEST(0, quantite_satisfaite - ?) 

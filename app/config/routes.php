@@ -18,16 +18,13 @@ require_once __DIR__ . '/../controllers/AchatController.php';
 require_once __DIR__ . '/../controllers/SimulationController.php';
 require_once __DIR__ . '/../controllers/RecapitulationController.php';
 
-// This wraps all routes in the group with the SecurityHeadersMiddleware
 $router->group('', function(Router $router) use ($app) {
 
-	// --- Dashboard ---
 	$router->get('/', function() {
 		$controller = new DashboardController();
 		$controller->index();
 	});
 
-	// --- Besoins ---
 	$router->get('/besoins', function() {
 		$controller = new BesoinController();
 		$controller->index();
@@ -48,6 +45,11 @@ $router->group('', function(Router $router) use ($app) {
 		$controller->delete();
 	});
 
+	$router->post('/besoins/reinitialiser', function() {
+		$controller = new BesoinController();
+		$controller->reinitialiser();
+	});
+
 	// --- Dons ---
 	$router->get('/dons', function() {
 		$controller = new DonController();
@@ -59,9 +61,29 @@ $router->group('', function(Router $router) use ($app) {
 		$controller->create();
 	});
 
+	$router->get('/dons/create-plus-petit', function() {
+		$controller = new DonController();
+		$controller->createPlusPetit();
+	});
+
 	$router->post('/dons/store', function() {
 		$controller = new DonController();
 		$controller->store();
+	});
+
+	$router->post('/dons/store-plus-petit', function() {
+		$controller = new DonController();
+		$controller->storePlusPetit();
+	});
+
+	$router->get('/dons/create-proportionnel', function() {
+		$controller = new DonController();
+		$controller->createProportionnel();
+	});
+
+	$router->post('/dons/store-proportionnel', function() {
+		$controller = new DonController();
+		$controller->storeProportionnel();
 	});
 
 	$router->post('/dons/delete', function() {
