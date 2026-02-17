@@ -64,27 +64,17 @@ CREATE TABLE bngrc_attribution (
 INSERT INTO bngrc_region (nom) VALUES
 ('Analamanga'),
 ('Atsinanana'),
-('Boeny'),
-('Bongolava'),
-('Diana'),
-('Haute Matsiatra'),
-('Itasy'),
-('Menabe'),
-('Sava'),
-('Vakinankaratra');
+('Sud'),
+('Est'),
+('Sud-Est');
 
 INSERT INTO bngrc_ville (nom, region_id) VALUES
 ('Antananarivo', 1),
-('Avarandrano', 1),
-('Toamasina', 2),
-('Mahajanga', 3),
-('Miarinarivo', 4),
-('Antsiranana', 5),
-('Fianarantsoa', 6),
-('Miarinarivo', 7),
-('Morondava', 8),
-('Antalaha', 9),
-('Antsirabe', 10);
+('Toamasina', 4),
+('Morondava', 3),
+('Mananjary', 4),
+('Farafangana', 5),
+('Nosy Be', 2);
 
 INSERT INTO bngrc_categorie_besoin (nom) VALUES
 ('en Nature'),
@@ -92,8 +82,8 @@ INSERT INTO bngrc_categorie_besoin (nom) VALUES
 ('en Argent');
 
 INSERT INTO bngrc_type_besoin (nom, categorie_id, prix_unitaire, unite) VALUES
-('riz', 1, 1000, 'kg'),
-('huile', 1, 2000, 'litre'),
+('riz', 1, 3000, 'kg'),
+('huile', 1, 6000, 'litre'),
 ('sucre', 1, 1500, 'kg'),
 ('sel', 1, 500, 'kg'),
 ('matelas', 2, 30000, 'unité'),

@@ -120,62 +120,55 @@ class BesoinController {
     }
 
     
-    public function reinitialiser() {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header("Location: /besoins");
-            exit();
-        }
-
-        require_once __DIR__ . '/../models/Attribution.php';
-        require_once __DIR__ . '/../models/Don.php';
-        require_once __DIR__ . '/../models/Achat.php';
-
-        try {
-            $this->db->beginTransaction();
-            $this->db->exec("DELETE FROM bngrc_achat");
-            $this->db->exec("DELETE FROM bngrc_attribution");
-            $this->db->exec("DELETE FROM bngrc_don");
-            $this->db->exec("DELETE FROM bngrc_besoin");
-            $query = "INSERT INTO bngrc_besoin (ville_id, type_besoin_id, quantite_demandee, date_saisie) VALUES
-                (1, 1, 1000, '2026-02-10 08:00:00'),
-                (1, 2, 200, '2026-02-10 08:15:00'),
-                (1, 11, 500, '2026-02-10 08:30:00'),
-                (2, 1, 500, '2026-02-10 10:00:00'),
-                (2, 5, 20, '2026-02-10 10:30:00'),
-                (2, 6, 30, '2026-02-10 11:00:00'),
-                (3, 1, 800, '2026-02-11 09:00:00'),
-                (3, 3, 300, '2026-02-11 09:30:00'),
-                (3, 7, 15, '2026-02-11 10:00:00'),
-                (4, 1, 600, '2026-02-11 14:00:00'),
-                (4, 4, 100, '2026-02-11 14:30:00'),
-                (5, 10, 50, '2026-02-12 08:00:00'),
-                (5, 1, 400, '2026-02-12 08:30:00'),
-                (6, 11, 1000, '2026-02-12 10:00:00'),
-                (6, 1, 700, '2026-02-12 10:30:00'),
-                (7, 12, 40, '2026-02-13 09:00:00'),
-                (7, 5, 25, '2026-02-13 09:30:00'),
-                (8, 1, 900, '2026-02-13 11:00:00'),
-                (8, 8, 50, '2026-02-13 11:30:00'),
-                (9, 1, 350, '2026-02-14 08:00:00'),
-                (9, 2, 150, '2026-02-14 08:30:00'),
-                (10, 1, 1200, '2026-02-14 10:00:00'),
-                (10, 3, 400, '2026-02-14 10:30:00'),
-                (10, 6, 50, '2026-02-14 11:00:00'),
-                (1, 5, 30, '2026-02-15 08:00:00'),
-                (2, 7, 10, '2026-02-15 09:00:00'),
-                (3, 6, 40, '2026-02-15 10:00:00'),
-                (4, 8, 60, '2026-02-15 11:00:00'),
-                (5, 1, 250, '2026-02-15 13:00:00'),
-                (6, 2, 180, '2026-02-15 14:00:00')";
-            $this->db->exec($query);
-
-            $this->db->commit();
-            header("Location: /besoins");
-            exit();
-        } catch (Exception $e) {
-            $this->db->rollBack();
-            die("Erreur lors de la réinitialisation : " . $e->getMessage());
-        }
+        public function reinitialiser() {
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                header("Location: /besoins");
+                exit();
+            }
+            require_once __DIR__ . '/../models/Attribution.php';
+            require_once __DIR__ . '/../models/Don.php';
+            require_once __DIR__ . '/../models/Achat.php';
+            try {
+                $this->db->beginTransaction();
+                $this->db->exec("DELETE FROM bngrc_achat");
+                $this->db->exec("DELETE FROM bngrc_attribution");
+                $this->db->exec("DELETE FROM bngrc_don");
+                $this->db->exec("DELETE FROM bngrc_besoin");
+                $query = "INSERT INTO bngrc_besoin (ville_id, type_besoin_id, quantite_demandee, date_saisie) VALUES
+                    (1, 6, 200,      '2026-02-15 00:01:00'),
+                    (4, 5, 40,       '2026-02-15 00:02:00'),
+                    (2, 10, 6000000, '2026-02-15 00:03:00'),
+                    (1, 2, 1500,     '2026-02-15 00:04:00'),
+                    (4, 1, 300,      '2026-02-15 00:05:00'),
+                    (2, 5, 80,       '2026-02-15 00:06:00'),
+                    (4, 10, 4000000, '2026-02-15 00:07:00'),
+                    (3, 6, 150,      '2026-02-16 00:08:00'),
+                    (2, 1, 500,      '2026-02-15 00:09:00'),
+                    (3, 10, 8000000, '2026-02-16 00:10:00'),
+                    (5, 1, 700,      '2026-02-16 00:11:00'),
+                    (1, 10, 12000000,'2026-02-16 00:12:00'),
+                    (5, 10, 10000000,'2026-02-16 00:13:00'),
+                    (3, 2, 1000,     '2026-02-15 00:14:00'),
+                    (5, 6, 180,      '2026-02-16 00:15:00'),
+                    (1, 9, 3,        '2026-02-15 00:16:00'),
+                    (1, 1, 800,      '2026-02-16 00:17:00'),
+                    (4, 4, 200,      '2026-02-16 00:18:00'),
+                    (2, 7, 60,       '2026-02-16 00:19:00'),
+                    (5, 2, 1200,     '2026-02-15 00:20:00'),
+                    (3, 1, 600,      '2026-02-16 00:21:00'),
+                    (5, 8, 150,      '2026-02-15 00:22:00'),
+                    (1, 5, 120,      '2026-02-16 00:23:00'),
+                    (4, 7, 30,       '2026-02-16 00:24:00'),
+                    (2, 3, 120,      '2026-02-16 00:25:00'),
+                    (3, 8, 100,      '2026-02-15 00:26:00')";
+                $this->db->exec($query);
+                $this->db->commit();
+                header("Location: /besoins");
+                exit();
+            } catch (Exception $e) {
+                $this->db->rollBack();
+                die("Erreur lors de la réinitialisation : " . $e->getMessage());
+            }
     }
 }
 ?>
